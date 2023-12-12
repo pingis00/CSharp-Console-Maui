@@ -5,6 +5,6 @@ public interface IContactService
     IServiceResult AddContactToList(IContact contact);
     IServiceResult DeleteContactFromList(string email);
     IServiceResult UpdateContactList(IContact contact);
-    IServiceResult GetCustomersFromList();
-    IServiceResult GetCustomerByEmailFromList(string email);
+    IServiceResult GetContactsFromList();
+    IServiceResult GetContactByEmailFromList(string email);
 }

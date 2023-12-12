@@ -2,6 +2,6 @@
 
 public interface IFileService
 {
-    bool SaveContentToFile(string content);
-    string GetContentFromFile();
+    bool SaveContentToFile(string filepath, string content);
+    string GetContentFromFile(string filepath);
 }

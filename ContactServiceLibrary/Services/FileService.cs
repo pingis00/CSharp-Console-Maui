@@ -1,18 +1,32 @@
 ﻿using ContactServiceLibrary.Interfaces;
+using System.Diagnostics;
 
 namespace ContactServiceLibrary.Services;
 
-public class FileService(string filePath) : IFileService
+public class FileService() : IFileService
 {
-    private readonly string _filePath = filePath;
-
-    public string GetContentFromFile()
+    public string GetContentFromFile(string filepath)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (File.Exists(filepath))
+            {
+                return File.ReadAllText(filepath);
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
     }
 
-    public bool SaveContentToFile(string content)
+    public bool SaveContentToFile(string filepath, string content)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var sw = new StreamWriter(filepath, false);
+            sw.WriteLine(content);
+            return true;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
     }
 }
