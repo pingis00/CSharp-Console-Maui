@@ -1,21 +1,17 @@
 ﻿using ContactServiceLibrary.Interfaces;
 using ContactServiceLibrary.Models.Responses;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace ContactServiceLibrary.Services;
 
 public class ContactService : IContactService
 {
-    private readonly IFileService _fileService;
+    private readonly IContactRepository _contactRepository;
 
-    public ContactService(IFileService fileService)
+    public ContactService(IContactRepository contactRepository)
     {
-        _fileService = fileService;
+        _contactRepository = contactRepository;
     }
-
-    private List<IContact> _contacts = [];
-
 
     public IServiceResult AddContactToList(IContact contact)
     {
@@ -23,17 +19,17 @@ public class ContactService : IContactService
 
         try
         {
-            if (_contacts.Any(x => x.Email == contact.Email))
+            var contacts = _contactRepository.LoadContacts();
+            if (contacts.Any(x => x.Email == contact.Email))
             {
                 response.Status = Enums.ServiceStatus.ALREADY_EXISTS;
             }
             else
             {
-                _contacts.Add(contact);
-                string json = JsonConvert.SerializeObject(_contacts, Formatting.Indented);
-                bool result = _fileService.SaveContentToFile(@"c:\School\CSharp-Projects\Json-filer\contacts.json", json);
+                contacts.Add(contact);
+                _contactRepository.SaveContacts(contacts);
 
-                response.Status = result ? Enums.ServiceStatus.SUCCESS : Enums.ServiceStatus.FAILED;
+                response.Status = Enums.ServiceStatus.SUCCESS;
             }
         }
         catch (Exception ex)
