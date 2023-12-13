@@ -28,8 +28,23 @@ public class FileService_Tests
     }
 
     [Fact]
-    public void GetContentFromFile_ShouldReturnContent_IxExists()
+    public void GetContentFromFile_ShouldReturnContent_IfExists()
     {
+        // Arrange
+        IFileService fileService = new FileService();
+        string testFilePath = Path.GetTempFileName();
+        string expectedContent = "Test content";
+        File.WriteAllText(testFilePath, expectedContent);
 
+        // Act
+        string actualContent = fileService.GetContentFromFile(testFilePath);
+
+        // Assert
+        Assert.Equal(expectedContent, actualContent);
+
+        if (File.Exists(testFilePath))
+        {
+            File.Delete(testFilePath);
+        }
     }
 }
