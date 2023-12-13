@@ -8,10 +8,12 @@ namespace ContactManagementSuite.Tests.RepositoriesTests;
 
 public class ContactRepository_Tests
 {
+    private object mockFileServic;
+
     [Fact]
     public void LoadContacts_ShouldReturnContacts_WhenFileHasContent()
     {
-        var mockFileServic = new Mock<IFileService>();
+        var mockFileService = new Mock<IFileService>();
         var testContacts = new List<IContact>
         {
             new Contact { FirstName = "Andreas", LastName = "Persson", Address = "Hemvägen 123", Email = "andy@domain.com", PhoneNumber = "0123456789" },
@@ -19,8 +21,8 @@ public class ContactRepository_Tests
         };
         var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
         var json = JsonConvert.SerializeObject(testContacts, settings);
-        mockFileServic.Setup(x => x.GetContentFromFile(It.IsAny<string>())).Returns(json);
-        var contactRepository = new ContactRepository(mockFileServic.Object, "filväg");
+        mockFileService.Setup(x => x.GetContentFromFile(It.IsAny<string>())).Returns(json);
+        var contactRepository = new ContactRepository(mockFileService.Object, "filväg");
 
         var contacts = contactRepository.LoadContacts();
 
@@ -48,5 +50,27 @@ public class ContactRepository_Tests
 
         Assert.NotNull(contacts);
         Assert.Empty(contacts);
+    }
+
+    [Fact]
+    public void SaveContacts_ShouldCallSaveContentToFile_WithCorrectJson()
+    {
+        var mockFileService = new Mock<IFileService>();
+        var testContacts = new List<IContact>
+        {
+            new Contact { FirstName = "Andreas", LastName = "Persson", Address = "Hemvägen 123", Email = "andy@domain.com", PhoneNumber = "0123456789" },
+            new Contact { FirstName = "Fredrik", LastName = "Svensson", Address = "Hemvägen 124", Email = "fredrik@domain.com", PhoneNumber = "9876543210" }
+        };
+        var contactRepository = new ContactRepository(mockFileService.Object, "filväg");
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects,
+            Formatting = Formatting.Indented
+        };
+        var expectedJson = JsonConvert.SerializeObject(testContacts, settings);
+
+        contactRepository.SaveContacts(testContacts);
+
+        mockFileService.Verify(x => x.SaveContentToFile("filväg", It.Is<string>(json => json == expectedJson)));
     }
 }

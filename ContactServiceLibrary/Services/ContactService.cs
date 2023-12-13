@@ -23,20 +23,20 @@ public class ContactService : IContactService
             var contacts = _contactRepository.LoadContacts();
             if (contacts.Any(x => x.Email == contact.Email))
             {
-                response.Status = Enums.ServiceStatus.ALREADY_EXISTS;
+                response.Status = ServiceStatus.ALREADY_EXISTS;
             }
             else
             {
                 contacts.Add(contact);
                 _contactRepository.SaveContacts(contacts);
 
-                response.Status = Enums.ServiceStatus.SUCCESS;
+                response.Status = ServiceStatus.SUCCESS;
             }
         }
         catch (Exception ex)
         { 
             Debug.WriteLine(ex.Message);
-            response.Status = Enums.ServiceStatus.FAILED;
+            response.Status = ServiceStatus.FAILED;
         }
 
         return response;
