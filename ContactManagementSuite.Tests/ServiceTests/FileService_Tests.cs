@@ -1,5 +1,5 @@
 ﻿using ContactServiceLibrary.Interfaces;
-using ContactServiceLibrary.Services;
+using ContactServiceLibrary.Repositories;
 
 namespace ContactManagementSuite.Tests.ServiceTests;
 

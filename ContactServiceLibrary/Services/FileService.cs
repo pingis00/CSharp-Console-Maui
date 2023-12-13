@@ -1,7 +1,7 @@
 ﻿using ContactServiceLibrary.Interfaces;
 using System.Diagnostics;
 
-namespace ContactServiceLibrary.Services;
+namespace ContactServiceLibrary.Repositories;
 
 public class FileService() : IFileService
 {

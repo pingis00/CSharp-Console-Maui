@@ -3,7 +3,7 @@ using ContactServiceLibrary.Interfaces;
 using ContactServiceLibrary.Models.Responses;
 using System.Diagnostics;
 
-namespace ContactServiceLibrary.Services;
+namespace ContactServiceLibrary.Repositories;
 
 public class ContactService : IContactService
 {
