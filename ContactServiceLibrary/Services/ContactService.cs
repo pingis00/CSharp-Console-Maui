@@ -1,4 +1,5 @@
-﻿using ContactServiceLibrary.Interfaces;
+﻿using ContactServiceLibrary.Enums;
+using ContactServiceLibrary.Interfaces;
 using ContactServiceLibrary.Models.Responses;
 using System.Diagnostics;
 
@@ -43,46 +44,37 @@ public class ContactService : IContactService
 
     public IServiceResult DeleteContactFromList(string email)
     {
-        try
+        return new ServiceResult
         {
-
-        }
-        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+            Status = ServiceStatus.SUCCESS,
+            Result = null!
+        };
     }
 
     public IServiceResult GetContactByEmailFromList(string email)
     {
-        try
+        return new ServiceResult
         {
-            
-        }
-        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+            Status = ServiceStatus.SUCCESS,
+            Result = null!
+        };
     }
 
     public IServiceResult GetContactsFromList()
     {
-        var response = new ServiceResult();
-
-        try
+        return new ServiceResult
         {
-            response.Status = Enums.ServiceStatus.SUCCESS;
-            response.Result = _contacts;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            response.Status = Enums.ServiceStatus.FAILED;
-        }
-
-        return response;
+            Status = ServiceStatus.SUCCESS,
+            Result = null!
+        };
     }
 
     public IServiceResult UpdateContactList(IContact contact)
     {
-        try
+        return new ServiceResult
         {
-
-        }
-        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+            Status = ServiceStatus.SUCCESS,
+            Result = null!
+        };
     }
 }

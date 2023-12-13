@@ -17,7 +17,14 @@ public class ContactRepository : IContactRepository
     public List<IContact> LoadContacts()
     {
         var json = _fileService.GetContentFromFile(_filepath);
-        return string.IsNullOrEmpty(json) ? new List<IContact>() : JsonConvert.DeserializeObject<List<IContact>>(json);
+        if (string.IsNullOrEmpty(json))
+        {
+            return new List<IContact>();
+        }
+        else
+        {
+            return JsonConvert.DeserializeObject<List<IContact>>(json)!;
+        }
     }
 
     public void SaveContacts(List<IContact> contacts)
