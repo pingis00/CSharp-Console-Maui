@@ -2,9 +2,9 @@
 
 public interface IContactService
 {
-    IServiceResult AddContactToList(IContact contact);
-    IServiceResult DeleteContactFromList(string email);
-    IServiceResult UpdateContactList(IContact contact);
+    IServiceResult AddContact(IContact contact);
+    IServiceResult DeleteContact(string email);
+    IServiceResult UpdateContact(IContact contact);
     IServiceResult GetContactsFromList();
     IServiceResult GetContactByEmailFromList(string email);
 }

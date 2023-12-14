@@ -14,7 +14,7 @@ public class ContactService : IContactService
         _contactRepository = contactRepository;
     }
 
-    public IServiceResult AddContactToList(IContact contact)
+    public IServiceResult AddContact(IContact contact)
     {
         var response = new ServiceResult();
 
@@ -41,7 +41,7 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult DeleteContactFromList(string email)
+    public IServiceResult DeleteContact(string email)
     {
         var response = new ServiceResult();
 
@@ -125,12 +125,37 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult UpdateContactList(IContact contact)
+    public IServiceResult UpdateContact(IContact contact)
     {
-        return new ServiceResult
+        var response = new ServiceResult();
+
+        try
         {
-            Status = ServiceStatus.SUCCESS,
-            Result = null!
-        };
+            var contacts = _contactRepository.LoadContacts();
+            var contactToUpdate = contacts.FirstOrDefault(x => x.Email == contact.Email);
+
+            if (contactToUpdate != null)
+            {
+                contactToUpdate.FirstName = contact.FirstName;
+                contactToUpdate.LastName = contact.LastName;
+                contactToUpdate.Address = contact.Address;
+                contactToUpdate.Email = contact.Email;
+                contactToUpdate.PhoneNumber = contact.PhoneNumber;
+
+                _contactRepository.SaveContacts(contacts);
+                response.Status = ServiceStatus.UPDATED;
+            }
+            else
+            {
+                response.Status = ServiceStatus.NOT_FOUND;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            response.Status = ServiceStatus.FAILED;
+            response.Result = null!;
+        }
+        return response;
     }
 }
