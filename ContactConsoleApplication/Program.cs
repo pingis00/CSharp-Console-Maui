@@ -2,4 +2,4 @@
 using ContactConsoleApplication.Services;
 
 IMenuService menuService = new MenuService();
-menuService.ShowMainMenu();
+
