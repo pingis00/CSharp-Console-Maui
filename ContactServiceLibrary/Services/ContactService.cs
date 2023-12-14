@@ -38,35 +38,91 @@ public class ContactService : IContactService
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
         }
-
         return response;
     }
 
     public IServiceResult DeleteContactFromList(string email)
     {
-        return new ServiceResult
+        var response = new ServiceResult();
+
+        try
         {
-            Status = ServiceStatus.SUCCESS,
-            Result = null!
-        };
+            var contacts = _contactRepository.LoadContacts();
+            var contactToDelete = contacts.FirstOrDefault(x => x.Email == email);
+            if (contactToDelete != null)
+            {
+                contacts.Remove(contactToDelete);
+                _contactRepository.SaveContacts(contacts);
+                response.Status = ServiceStatus.DELETED;
+            }
+            else
+            {
+                response.Status= ServiceStatus.NOT_FOUND;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            response.Status = ServiceStatus.FAILED;
+        }
+        return response;
     }
 
     public IServiceResult GetContactByEmailFromList(string email)
     {
-        return new ServiceResult
+        var response = new ServiceResult();
+
+        try
         {
-            Status = ServiceStatus.SUCCESS,
-            Result = null!
-        };
+            var contacts = _contactRepository.LoadContacts();
+            var getContact = contacts.FirstOrDefault(x => x.Email == email);
+
+            if (getContact != null)
+            {
+                response.Status = ServiceStatus.SUCCESS;
+                response.Result = getContact;
+            }
+            else
+            {
+                response.Status = ServiceStatus.NOT_FOUND;
+                response.Result = null!;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            response.Status = ServiceStatus.FAILED;
+            response.Result = null!;
+        }
+        return response;
     }
 
     public IServiceResult GetContactsFromList()
     {
-        return new ServiceResult
+        var response = new ServiceResult();
+
+        try
         {
-            Status = ServiceStatus.SUCCESS,
-            Result = null!
-        };
+            var contacts = _contactRepository.LoadContacts();
+
+            if (contacts != null && contacts.Any())
+            {
+                response.Status = ServiceStatus.SUCCESS;
+                response.Result = contacts;
+            }
+            else
+            {
+                response.Status= ServiceStatus.SUCCESS;
+                response.Result = new List<IContact>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            response.Status = ServiceStatus.FAILED;
+            response.Result = null!;
+        }
+        return response;
     }
 
     public IServiceResult UpdateContactList(IContact contact)

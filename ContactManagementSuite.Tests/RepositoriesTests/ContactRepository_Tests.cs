@@ -8,8 +8,6 @@ namespace ContactManagementSuite.Tests.RepositoriesTests;
 
 public class ContactRepository_Tests
 {
-    private object mockFileServic;
-
     [Fact]
     public void LoadContacts_ShouldReturnContacts_WhenFileHasContent()
     {
