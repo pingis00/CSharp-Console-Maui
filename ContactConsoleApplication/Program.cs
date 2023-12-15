@@ -17,5 +17,5 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
 builder.Start();
 Console.Clear();
 
-var menuService = builder.Services.GetRequiredService<MenuService>();
+var menuService = builder.Services.GetRequiredService<IMenuService>();
 menuService.ShowMainMenu();
