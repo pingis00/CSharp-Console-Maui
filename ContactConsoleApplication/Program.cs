@@ -7,9 +7,11 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
 {
+    var filePath = "c:/School/CSharp-Projects/Json-Filer/contacts.json";
+
     services.AddSingleton<IFileService, FileService>();
     services.AddSingleton<IContactService, ContactService>();
-    services.AddSingleton<IContactRepository, ContactRepository>();
+    services.AddSingleton<IContactRepository>(provider => new ContactRepository(provider.GetRequiredService<IFileService>(), filePath));
     services.AddSingleton<IMenuService, MenuService>();
 
 }).Build();

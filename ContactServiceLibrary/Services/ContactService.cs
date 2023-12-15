@@ -37,6 +37,7 @@ public class ContactService : IContactService
         { 
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
+            response.Result = ex.Message;
         }
         return response;
     }
@@ -64,6 +65,7 @@ public class ContactService : IContactService
         {
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
+            response.Result = ex.Message;
         }
         return response;
     }
@@ -92,7 +94,7 @@ public class ContactService : IContactService
         {
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
-            response.Result = null!;
+            response.Result = ex.Message;
         }
         return response;
     }
@@ -120,7 +122,7 @@ public class ContactService : IContactService
         {
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
-            response.Result = null!;
+            response.Result = ex.Message;
         }
         return response;
     }
@@ -154,7 +156,7 @@ public class ContactService : IContactService
         {
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
-            response.Result = null!;
+            response.Result = ex.Message;
         }
         return response;
     }

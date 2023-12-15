@@ -58,36 +58,59 @@ public class MenuService : IMenuService
     }
     private void ShowAddContactOption()
     {
-        IContact contact = new Contact();
+        bool contactAddedOrAborted = false;
 
-        DisplayMenuTitle("Add New Contact");
-        Console.Write("First Name: ");
-        contact.FirstName = Console.ReadLine()!;
-
-        Console.Write("Last Name: ");
-        contact.LastName = Console.ReadLine()!;
-
-        Console.Write("Address: ");
-        contact.Address = Console.ReadLine()!;
-
-        Console.Write("Email: ");
-        contact.Email = Console.ReadLine()!;
-
-        Console.Write("Phone Number: ");
-        contact.PhoneNumber = Console.ReadLine()!;
-
-        var serviceResult = _contactService.AddContact(contact);
-        switch (serviceResult.Status)
+        while (!contactAddedOrAborted)
         {
-            case ServiceStatus.SUCCESS:
-                Console.WriteLine("The Contact was added successfully");
-                break;
-            case ServiceStatus.ALREADY_EXISTS:
-                Console.WriteLine("The Contact this email-address already exists");
-                break;
-            case ServiceStatus.FAILED:
-                Console.WriteLine("Failed when trying to add a contact to the contact list");
-                break;
+            IContact contact = new Contact();
+
+            DisplayMenuTitle("Add New Contact");
+            Console.Write("First Name: ");
+            contact.FirstName = Console.ReadLine()!;
+
+            Console.Write("Last Name: ");
+            contact.LastName = Console.ReadLine()!;
+
+            Console.Write("Address: ");
+            contact.Address = Console.ReadLine()!;
+
+            Console.Write("Email: ");
+            contact.Email = Console.ReadLine()!;
+
+            Console.Write("Phone Number: ");
+            contact.PhoneNumber = Console.ReadLine()!;
+
+            var serviceResult = _contactService.AddContact(contact);
+            switch (serviceResult.Status)
+            {
+                case ServiceStatus.SUCCESS:
+                    Console.Clear();
+                    Console.WriteLine("The Contact was added successfully");
+                    ShowUpdatedContactDetails(contact, "Added Contact");
+                    contactAddedOrAborted = true;
+                    break;
+
+                case ServiceStatus.ALREADY_EXISTS:
+                    Console.WriteLine(new string('-', 40));
+                    Console.WriteLine("\nA Contact with this email-address already exists!");
+                    Console.Write("\nWould you like to try a different email? (Y/N): ");
+                    if (Console.ReadLine()!.Trim().ToUpper() != "Y")
+                    {
+                        contactAddedOrAborted = true;
+                    }
+                    break;
+
+                case ServiceStatus.FAILED:
+                    Console.WriteLine("Failed when trying to add a contact to the contact list");
+                    contactAddedOrAborted = true;
+                    break;
+            }
+            if (contactAddedOrAborted)
+            {
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey();
+            }
+
         }
     }
 
@@ -101,9 +124,31 @@ public class MenuService : IMenuService
         if (string.IsNullOrEmpty(email))
         {
             Console.WriteLine("Email cannot be empty.");
+            Console.ReadKey();
             return;
         }
 
+        var getContact = _contactService.GetContactByEmailFromList(email);
+        if (getContact.Status == ServiceStatus.SUCCESS)
+        {
+            if (getContact.Result is IContact contact)
+            {
+                ShowUpdatedContactDetails(contact, "Contact to Delete");
+
+                Console.Write("\nAre you sure you want to delete this contact? (Y/N): ");
+                var confirmation = Console.ReadLine()!;
+                if(confirmation.Trim().ToUpper() == "Y")
+                {
+                    var deleteResult = _contactService.DeleteContact(email);
+                    switch (deleteResult.Status)
+                    {
+                        case ServiceStatus.DELETED:
+                            Console.WriteLine("Contact deleted successfully.");
+                            break;
+                    }
+                }
+            }
+        }
         var serviceResult = _contactService.DeleteContact(email);
 
         switch (serviceResult.Status)
@@ -111,9 +156,11 @@ public class MenuService : IMenuService
             case ServiceStatus.DELETED:
                 Console.WriteLine("Contact deleted successfully.");
                 break;
+
             case ServiceStatus.NOT_FOUND:
                 Console.WriteLine("Contact with that email address doesn´t exist.");
                 break;
+
             case ServiceStatus.FAILED:
                 Console.WriteLine("An error occurred while deleting the contact.");
                 break;
@@ -125,6 +172,81 @@ public class MenuService : IMenuService
     private void ShowUpdateContactOption()
     {
         DisplayMenuTitle("Update Contact");
+
+        Console.Write("Enter the Email of the Contact to Update: ");
+        var email = Console.ReadLine()!;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("Email cannot be empty.");
+            Console.ReadKey();
+            return;
+        }
+
+        var getContact = _contactService.GetContactByEmailFromList(email);
+
+        switch (getContact.Status)
+        {
+            case ServiceStatus.SUCCESS:
+                var contactToUpdate = getContact.Result as IContact;
+                if (contactToUpdate != null)
+                {
+
+                    Console.Write($"({contactToUpdate.FirstName}) Change First name (or press Enter to skip): ");
+                    var firstName = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(firstName)) { contactToUpdate.FirstName = firstName; }
+
+                    Console.Write($"({contactToUpdate.LastName}) Change Last name (or press Enter to skip): ");
+                    var lastName = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(lastName)) { contactToUpdate.LastName = lastName; }
+
+                    Console.Write($"({contactToUpdate.Address}) Change Address (or press Enter to skip): ");
+                    var Address = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(Address)) { contactToUpdate.Address = Address; }
+
+                    Console.Write($"({contactToUpdate.Email}) Change Email (or press Enter to skip): ");
+                    var Email = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(Email)) { contactToUpdate.Email = Email; }
+
+                    Console.Write($"({contactToUpdate.PhoneNumber}) Change phone number (or press Enter to skip): ");
+                    var phoneNumber = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(phoneNumber)) { contactToUpdate.PhoneNumber = phoneNumber; }
+
+                    var updateResult = _contactService.UpdateContact(contactToUpdate);
+                    switch (updateResult.Status)
+                    {
+                        case ServiceStatus.UPDATED:
+                            Console.Clear();
+                            Console.WriteLine("Contact updated successfully.");
+                            ShowUpdatedContactDetails(contactToUpdate, "Updated Contact Details");
+                            break;
+
+                        case ServiceStatus.FAILED:
+                            Console.WriteLine("An error occurred while updating the contact.");
+                            break;
+
+                        default:
+                            Console.WriteLine("Unexpected status when updating the contact.");
+                            break;
+                    }
+                }
+                break;
+
+            case ServiceStatus.NOT_FOUND:
+                Console.WriteLine("Contact with that email doesn´t exist.");
+                break;
+
+            case ServiceStatus.FAILED:
+                Console.WriteLine("An error occurred while retrieving the contact.");
+                break;
+
+            default:
+                Console.WriteLine("Unexpected status when retrieving the contact.");
+                break;
+        }
+
+        Console.WriteLine("\nPress any key to continue...");
+        Console.ReadKey();
     }
 
     private void ShowContactDetailOption()
@@ -211,5 +333,17 @@ public class MenuService : IMenuService
         Console.Clear();
         Console.WriteLine($"## {title} ##");
         Console.WriteLine();
+    }
+
+    private void ShowUpdatedContactDetails(IContact contact, string title)
+    {
+        Console.WriteLine($"\n{title}:");
+        Console.WriteLine(new string('-', 40));
+        Console.WriteLine($"{"First Name:", -15} {contact.FirstName}");
+        Console.WriteLine($"{"Last Name:", -15} {contact.LastName}");
+        Console.WriteLine($"{"Address:", -15} {contact.Address}");
+        Console.WriteLine($"{"Email:", -15} {contact.Email}");
+        Console.WriteLine($"{"Phone Number:", -15} {contact.PhoneNumber}");
+        Console.WriteLine(new string('-', 40));
     }
 }
