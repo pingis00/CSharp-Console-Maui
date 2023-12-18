@@ -141,7 +141,6 @@ public class ContactService : IContactService
                 contactToUpdate.FirstName = contact.FirstName;
                 contactToUpdate.LastName = contact.LastName;
                 contactToUpdate.Address = contact.Address;
-                contactToUpdate.Email = contact.Email;
                 contactToUpdate.PhoneNumber = contact.PhoneNumber;
 
                 _contactRepository.SaveContacts(contacts);

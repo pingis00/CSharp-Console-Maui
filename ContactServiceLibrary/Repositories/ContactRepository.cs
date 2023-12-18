@@ -52,6 +52,5 @@ public class ContactRepository : IContactRepository
             _fileService.SaveContentToFile(_filepath, json);
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message);}
-
     }
 }
