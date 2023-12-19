@@ -17,8 +17,6 @@ public class DeleteContactCommand : ICommand
 
     public void Execute()
     {
-
-
         bool deleteContacts = true;
         while (deleteContacts)
         {

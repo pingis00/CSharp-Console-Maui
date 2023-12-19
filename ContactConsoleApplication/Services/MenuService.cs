@@ -1,17 +1,18 @@
 ﻿using ContactConsoleApplication.Commands;
 using ContactConsoleApplication.Interfaces;
 using ContactServiceLibrary.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ContactConsoleApplication.Services;
 
 public class MenuService : IMenuService
 {
-    private readonly IContactService _contactService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IUserInterfaceServices _userInterfaceService;
 
-    public MenuService(IContactService contactService, IUserInterfaceServices userInterfaceService)
+    public MenuService(IServiceProvider serviceProvider, IUserInterfaceServices userInterfaceService)
     {
-        _contactService = contactService;
+        _serviceProvider = serviceProvider;
         _userInterfaceService = userInterfaceService;
     }
 
@@ -32,23 +33,23 @@ public class MenuService : IMenuService
             switch (option)
             {
                 case "1":
-                    var addContactCommand = new AddContactCommand(_contactService, _userInterfaceService);
+                    var addContactCommand = _serviceProvider.GetRequiredService<AddContactCommand>();
                     addContactCommand.Execute();
                     break;
                 case "2":
-                    var deleteContactCommand = new DeleteContactCommand(_contactService, _userInterfaceService);
+                    var deleteContactCommand = _serviceProvider.GetRequiredService<DeleteContactCommand>();
                     deleteContactCommand.Execute();
                     break;
                 case "3":
-                    var updateContactCommand = new UpdateContactCommand(_contactService, _userInterfaceService);
+                    var updateContactCommand = _serviceProvider.GetRequiredService<UpdateContactCommand>();
                     updateContactCommand.Execute();
                     break;
                 case "4":
-                    var viewContactDetailCommand = new ViewContactDetailCommand(_contactService, _userInterfaceService);
+                    var viewContactDetailCommand = _serviceProvider.GetRequiredService<ViewContactDetailCommand>();
                     viewContactDetailCommand.Execute();
                     break;
                 case "5":
-                    var viewContactListCommand = new ViewContactListCommand(_contactService, _userInterfaceService);
+                    var viewContactListCommand = _serviceProvider.GetRequiredService<ViewContactListCommand>();
                     viewContactListCommand.Execute();
                     break;
                 case "0":
