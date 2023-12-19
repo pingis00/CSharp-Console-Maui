@@ -8,10 +8,12 @@ namespace ContactConsoleApplication.Commands;
 public class AddContactCommand : ICommand
 {
     private readonly IContactService _contactService;
+    private readonly IUserInterfaceServices _userInterfaceServices;
 
-    public AddContactCommand(IContactService contactService)
+    public AddContactCommand(IContactService contactService, IUserInterfaceServices userInterfaceServices)
     {
         _contactService = contactService;
+        _userInterfaceServices = userInterfaceServices;
     }
 
     public void Execute()
@@ -22,33 +24,33 @@ public class AddContactCommand : ICommand
         {
             IContact contact = new Contact();
 
-            DisplayMenuTitle("Add New Contact");
+            _userInterfaceServices.DisplayMenuTitle("Add New Contact");
 
-            contact.FirstName = ReadNonEmptyInput("First Name: ");
-            contact.LastName = ReadNonEmptyInput("Last Name: ");
-            contact.Address = ReadNonEmptyInput("Address: ");
-            contact.Email = ReadNonEmptyInput("Email: ");
-            contact.PhoneNumber = ReadNonEmptyInput("Phone Number: ");
+            contact.FirstName = _userInterfaceServices.ReadNonEmptyInput("First Name: ");
+            contact.LastName = _userInterfaceServices.ReadNonEmptyInput("Last Name: ");
+            contact.Address = _userInterfaceServices.ReadNonEmptyInput("Address: ");
+            contact.Email = _userInterfaceServices.ReadNonEmptyInput("Email: ");
+            contact.PhoneNumber = _userInterfaceServices.ReadNonEmptyInput("Phone Number: ");
 
             var serviceResult = _contactService.AddContact(contact);
             switch (serviceResult.Status)
             {
                 case ServiceStatus.SUCCESS:
                     Console.Clear();
-                    ShowMessage("The Contact was added successfully", isError: false);
-                    ShowContactDetails(contact, "Added Contact");
+                    _userInterfaceServices.ShowMessage("The Contact was added successfully", isError: false);
+                    _userInterfaceServices.ShowContactDetails(contact, "Added Contact");
                     break;
 
                 case ServiceStatus.ALREADY_EXISTS:
-                    ShowMessage("A Contact with this email already exists!", isError: true);
+                    _userInterfaceServices.ShowMessage("A Contact with this email already exists!", isError: true);
                     break;
 
                 case ServiceStatus.FAILED:
-                    ShowMessage("Failed when trying to add a contact to the contact list", isError: true);
+                    _userInterfaceServices.ShowMessage("Failed when trying to add a contact to the contact list", isError: true);
                     break;
             }
-            addingContacts = AskToContinue("\nDo you want to add another contact?");
+            addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
         }
-        ReturnToMainMenu();
+        _userInterfaceServices.ReturnToMainMenu();
     }
 }

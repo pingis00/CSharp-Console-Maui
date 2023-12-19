@@ -4,7 +4,7 @@ namespace ContactConsoleApplication.Interfaces;
 
 public interface IUserInterfaceServices
 {
-    void ShowExitApplicationOption();
+    void ExitApplication();
     void DisplayMenuTitle(string title);
     string ReadNonEmptyInput(string prompt);
     void ReturnToMainMenu();
