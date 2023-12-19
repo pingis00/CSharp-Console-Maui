@@ -8,160 +8,140 @@ namespace ContactManagementSuite.Tests.ServiceTests;
 
 public class ContactService_Tests
 {
-    [Fact]
-    public void AddContactToList_ShouldAddContact_WhenNotExists()
-    {
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact>());
-        var contactService = new ContactService(mockContactRepository.Object);
+    private readonly Mock<IContactRepository> mockContactRepository;
+    private readonly ContactService contactService;
 
-        var newContact = new Contact { Email = "andy@domain.com" };
+    public ContactService_Tests()
+    {
+        mockContactRepository = new Mock<IContactRepository>();
+        contactService = new ContactService(mockContactRepository.Object);
+    }
+
+    [Theory]
+    [InlineData("andy@domain.com", ServiceStatus.SUCCESS, true)]
+    [InlineData("existing@domain.com", ServiceStatus.ALREADY_EXISTS, false)]
+    public void AddContactToList_ShouldReturnExpectedStatus_AndCallSaveCorrectly(string email, ServiceStatus expectedStatus, bool shouldCallSave)
+    {
+        var existingContact = new Contact { Email = "existing@domain.com" };
+        var contacts = new List<IContact> { existingContact };
+        mockContactRepository.Setup(x => x.LoadContacts()).Returns(contacts);
+        var newContact = new Contact { Email = email };
 
         var result = contactService.AddContact(newContact);
 
-        Assert.Equal(ServiceStatus.SUCCESS, result.Status);
-        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), Times.Once);
+        Assert.Equal(expectedStatus, result.Status);
+        var times = shouldCallSave ? Times.Once() : Times.Never();
+        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), times);
     }
 
-    [Fact]
-    public void AddContactToList_ShouldNotAddContact_WhenExists()
+    [Theory]
+    [InlineData("andy@domain.com", ServiceStatus.DELETED, true)]
+    [InlineData("nonexisting@domain.com", ServiceStatus.NOT_FOUND, false)]
+    public void DeleteContactFromList_ShouldReturnExpectedStatus_AndCallSaveCorrectly(string email, ServiceStatus expectedStatus, bool shouldCallSave)
     {
-        var existingContact = new Contact { Email = "andy@domain.com" };
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact> { existingContact });
-        var contactService = new ContactService(mockContactRepository.Object);
-
-        var newContact = new Contact { Email= "andy@domain.com" };
-
-        var result = contactService.AddContact(newContact);
-
-        Assert.Equal(ServiceStatus.ALREADY_EXISTS, result.Status);
-        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), Times.Never);
-    }
-
-    [Fact]
-    public void DeleteContactFromList_ShouldDeleteContactByEmail_IfContactExist()
-    {
-        var existingContact = new Contact { Email = "andy@domain.com" };
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact> { existingContact });
-        var contactService = new ContactService(mockContactRepository.Object);
-
-        var result = contactService.DeleteContact("andy@domain.com");
-
-        Assert.Equal(ServiceStatus.DELETED, result.Status);
-        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), Times.Once);
-    }
-
-    [Fact]
-    public void DeleteContactFromList_ShouldReturnNotFound_IfContactDoesntExist()
-    {
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact>());
-        var contactService = new ContactService(mockContactRepository.Object);
-
-        var result = contactService.DeleteContact("andy@domain.com");
-
-        Assert.Equal(ServiceStatus.NOT_FOUND, result.Status);
-        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), Times.Never);
-    }
-
-    [Fact]
-    public void GetContactFromListByEmail_ShouldGetContact_IfItExists()
-    {
-        var existingContact = new Contact { Email = "andy@domain.com" };
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact> { existingContact });
-        var contactService = new ContactService(mockContactRepository.Object);
-
-        var result = contactService.GetContactByEmailFromList("andy@domain.com");
-
-        Assert.Equal(ServiceStatus.SUCCESS, result.Status);
-        Assert.NotNull(result.Result);
-        var returnedContact = result.Result as Contact;
-        Assert.NotNull(returnedContact);
-        Assert.Equal("andy@domain.com", returnedContact.Email);
-    }
-
-
-    [Fact]
-    public void GetContactFromListByEmail_ShouldReturnNotFound_IfEmailDoesntExist()
-    {
-        var existingContact = new Contact { Email = "andy@domain.com" };
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact> { existingContact });
-        var contactService = new ContactService(mockContactRepository.Object);
-
-        var result = contactService.GetContactByEmailFromList("andreas@domain.com");
-
-        Assert.Equal(ServiceStatus.NOT_FOUND, result.Status);
-        Assert.Null(result.Result);
-    }
-
-    [Fact]
-    public void GetContactsFromList_ShouldReturnContactList_IfListExist()
-    {
-        var testContacts = new List<IContact>
+        var contacts = new List<IContact>();
+        if (email == "andy@domain.com")
         {
-            new Contact { FirstName = "Andreas", LastName = "Persson", Address = "Hemvägen 123", Email = "andy@domain.com", PhoneNumber = "0123456789" },
-            new Contact { FirstName = "Fredrik", LastName = "Svensson", Address = "Hemvägen 124", Email = "fredrik@domain.com", PhoneNumber = "9876543210" }
-        };
+            contacts.Add(new Contact { Email = "andy@domain.com" });
+        }
+        mockContactRepository.Setup(x => x.LoadContacts()).Returns(contacts);
 
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(testContacts);
-        var contactService = new ContactService(mockContactRepository.Object);
+        var result = contactService.DeleteContact(email);
 
-        var result = contactService.GetContactsFromList();
-
-        Assert.Equal(ServiceStatus.SUCCESS, result.Status);
-        Assert.NotNull(result.Result);
-        var contacts = result.Result as List<IContact>;
-        Assert.NotNull(contacts);
-        Assert.Equal(testContacts.Count, contacts.Count);
+        Assert.Equal(expectedStatus, result.Status);
+        var times = shouldCallSave ? Times.Once() : Times.Never();
+        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), times);
     }
 
-    [Fact]
-    public void GetContactsFromList_ShouldReturnEmptyList_IfNoContactsExists()
+    [Theory]
+    [InlineData("andy@domain.com", ServiceStatus.SUCCESS, true)]
+    [InlineData("nonexisting@domain.com", ServiceStatus.NOT_FOUND, false)]
+    public void GetContactFromFromListByEmail_ShouldReturnExpectedStatus(string email, ServiceStatus expectedStatus, bool shouldExist)
     {
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact>());
-        var contactService = new ContactService(mockContactRepository.Object);
+        var contacts = new List<IContact>();
+        if (shouldExist)
+        {
+            contacts.Add(new Contact { Email = "andy@domain.com" });
+        }
+        mockContactRepository.Setup(x => x.LoadContacts()).Returns(contacts);
+
+        var result = contactService.GetContactByEmailFromList(email);
+
+        Assert.Equal(expectedStatus, result.Status);
+        if(expectedStatus == ServiceStatus.SUCCESS)
+        {
+            Assert.NotNull(result.Result);
+            var returnedContact = result.Result as Contact;
+            Assert.NotNull(returnedContact);
+            Assert.Equal(email, returnedContact.Email);
+        }
+        else
+        {
+            Assert.Null(result.Result);
+        }
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    public void GetContactsFromList_ShouldReturnExpectedNumberOfContacts(int expectedCount)
+    {
+        var testContacts = CreateTestContacts(expectedCount);
+        mockContactRepository.Setup(x => x.LoadContacts()).Returns(testContacts);
 
         var result = contactService.GetContactsFromList();
 
         Assert.Equal(ServiceStatus.SUCCESS, result.Status);
-        Assert.NotNull(result.Result);
         var contacts = result.Result as List<IContact>;
-        Assert.NotNull(contacts);
-        Assert.Empty(contacts);
+        Assert.Equal(expectedCount, contacts?.Count);
     }
 
-    [Fact]
-    public void UpdateContactList_ShouldUpdateContact_IfItExists()
+    private List<IContact> CreateTestContacts(int count)
+    {
+        return Enumerable.Range(1, count).Select(i => (IContact) new Contact
+        {
+                FirstName = $"First{i}",
+                LastName = $"Last{i}",
+                Email = $"email{i}@example.com",
+                PhoneNumber = $"0123456789{i}",
+                Address = $"Address{i}"
+        }).ToList();
+    }
+
+    [Theory]
+    [InlineData("andy@domain.com", "Andreas", "Persson", "Hemvägen 123", "0123456789", ServiceStatus.UPDATED, true)]
+    [InlineData("nonexistent@domain.com", "Fredrik", "Svensson", "Hemvägen 124", "9876543210", ServiceStatus.NOT_FOUND, false)]
+    public void UpdateContactList_ShouldReturnExpectedStatus_AndCallSaveCorrectly(
+        string emailToUpdate,
+        string newFirstName,
+        string newLastName,
+        string newAddress,
+        string newPhoneNumber,
+        ServiceStatus expectedStatus,
+        bool shouldCallSave)
     {
         var existingContact = new Contact { Email = "andy@domain.com", FirstName = "Andreas", LastName = "Persson", Address = "Hemvägen 123", PhoneNumber = "0123456789" };
-        var updatedContact = new Contact { Email = "andy@domain.com", FirstName = "Fredrik", LastName = "Svensson", Address = "Hemvägen 124", PhoneNumber = "9876543210" };
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact> { existingContact });
-        mockContactRepository.Setup(x => x.SaveContacts(It.IsAny<List<IContact>>())).Verifiable();
-        var contactService = new ContactService(mockContactRepository.Object);
 
-        var result = contactService.UpdateContact(updatedContact);
+        var contacts = new List<IContact> { existingContact };
+        mockContactRepository.Setup(x => x.LoadContacts()).Returns(contacts);
 
-        Assert.Equal(ServiceStatus.UPDATED, result.Status);
-        mockContactRepository.Verify(x => x.SaveContacts(It.IsAny<List<IContact>>()), Times.Once);
-    }
+        var contactToUpdate = new Contact { Email = emailToUpdate, FirstName = newFirstName, LastName = newLastName, Address = newAddress, PhoneNumber = newPhoneNumber };
 
-    [Fact]
-    public void UpdateContactList_ShouldReturnNotFound_IfContactDoesntExist()
-    {
-        var mockContactRepository = new Mock<IContactRepository>();
-        mockContactRepository.Setup(x => x.LoadContacts()).Returns(new List<IContact>());
-        var contactService = new ContactService(mockContactRepository.Object);
-        var noneExistingContact = new Contact { Email = "andy@domain.com" };
+        var result = contactService.UpdateContact(contactToUpdate);
 
-        var result = contactService.UpdateContact(noneExistingContact);
+        mockContactRepository.Verify(x => x.LoadContacts(), Times.Once);
+        Assert.Equal(expectedStatus, result.Status);
 
-        Assert.Equal(ServiceStatus.NOT_FOUND, result.Status);
+        if (expectedStatus == ServiceStatus.UPDATED)
+        {
+            var updatedContact = contacts.First(c => c.Email == existingContact.Email);
+            Assert.Equal(newFirstName, updatedContact.FirstName);
+            Assert.Equal(newLastName, updatedContact.LastName);
+            Assert.Equal(newAddress, updatedContact.Address);
+            Assert.Equal(newPhoneNumber, updatedContact.PhoneNumber);
+        }
+
+        var times = shouldCallSave ? Times.Once() : Times.Never();
+        mockContactRepository.Verify(x => x.SaveContacts(contacts), times);
     }
 }
