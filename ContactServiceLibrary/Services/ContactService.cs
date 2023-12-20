@@ -1,7 +1,9 @@
 ﻿using ContactServiceLibrary.Enums;
 using ContactServiceLibrary.Interfaces;
 using ContactServiceLibrary.Models.Responses;
+using ContactServiceLibrary.Utilities;
 using System.Diagnostics;
+using System.Text;
 
 namespace ContactServiceLibrary.Repositories;
 
@@ -21,7 +23,24 @@ public class ContactService : IContactService
     public IServiceResult AddContact(IContact contact)
     {
         var response = new ServiceResult();
+        var errorMessage = new StringBuilder();
 
+        if (!ValidationUtility.IsValidEmail(contact.Email))
+        {
+            errorMessage.AppendLine("Invalid email format.Expected format: example@domain.com");
+        }
+
+        if (!ValidationUtility.IsValidPhoneNumber(contact.PhoneNumber))
+        {
+            errorMessage.AppendLine("Invalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.");
+        }
+
+        if (errorMessage.Length > 0)
+        {
+            response.Status = ServiceStatus.FAILED;
+            response.Result = errorMessage.ToString();
+            return response;
+        }
         try
         {
             var contacts = _contactRepository.LoadContacts();
@@ -33,7 +52,6 @@ public class ContactService : IContactService
             {
                 contacts.Add(contact);
                 _contactRepository.SaveContacts(contacts);
-
                 response.Status = ServiceStatus.SUCCESS;
             }
         }

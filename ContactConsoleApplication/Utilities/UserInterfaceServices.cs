@@ -66,7 +66,7 @@ public class UserInterfaceServices : IUserInterfaceServices
         if (!string.IsNullOrEmpty(sortMethod))
         {
             Console.WriteLine($"List sorted by: {sortMethod}");
-            Console.WriteLine(new string('-', 40));
+            Console.WriteLine(new string('-', 90));
         }
 
         Console.WriteLine($"\n{"First Name",-15} {"Last Name",-15} {"Address",-20} {"Email",-25} {"Phone",-15}");

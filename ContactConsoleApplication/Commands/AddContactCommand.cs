@@ -46,7 +46,7 @@ public class AddContactCommand : ICommand
                     break;
 
                 case ServiceStatus.FAILED:
-                    _userInterfaceServices.ShowMessage("Failed when trying to add a contact to the contact list", isError: true);
+                    _userInterfaceServices.ShowMessage($"Failed when trying to add a contact to the contact list:\n{serviceResult.Result}", isError: true);
                     break;
             }
             addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
