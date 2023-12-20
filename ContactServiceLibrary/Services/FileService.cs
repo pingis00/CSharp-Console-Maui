@@ -25,8 +25,12 @@ public class FileService() : IFileService
             {
                 return File.ReadAllText(filepath);
             }
+            else
+            {
+                return string.Empty;
+            }
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
-        return null!;
+        return string.Empty;
     }
 }

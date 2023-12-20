@@ -36,11 +36,11 @@ public class ContactRepository : IContactRepository
                     TypeNameHandling = TypeNameHandling.Objects
                 };
 
-                return JsonConvert.DeserializeObject<List<IContact>>(json, settings)!;
+                return JsonConvert.DeserializeObject<List<IContact>>(json, settings) ?? new List<IContact>();
             }
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
-        return null!;
+        return new List<IContact>();
     }
 
     public void SaveContacts(List<IContact> contacts)
