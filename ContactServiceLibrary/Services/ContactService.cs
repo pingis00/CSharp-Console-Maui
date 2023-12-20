@@ -9,6 +9,10 @@ public class ContactService : IContactService
 {
     private readonly IContactRepository _contactRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the ContactService class.
+    /// </summary>
+    /// <param name="contactRepository">The contact repository to handle contact data.</param>
     public ContactService(IContactRepository contactRepository)
     {
         _contactRepository = contactRepository;

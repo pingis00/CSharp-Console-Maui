@@ -9,6 +9,11 @@ public class ContactRepository : IContactRepository
     private readonly IFileService _fileService;
     private readonly string _filepath;
 
+    /// <summary>
+    /// Initializes a new instance of the ContactRepository class.
+    /// </summary>
+    /// <param name="fileService">The file service to handle file operations</param>
+    /// <param name="filepath">The path to the file where contacts are stored</param>
     public ContactRepository(IFileService fileService, string filepath)
     {
         _fileService = fileService;
