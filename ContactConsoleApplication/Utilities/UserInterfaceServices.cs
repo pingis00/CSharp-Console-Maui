@@ -7,16 +7,25 @@ public class UserInterfaceServices : IUserInterfaceServices
 {
     public bool AskToContinue(string message)
     {
-        Console.Write($"{message} (Y/N): ");
-        var choice = Console.ReadLine();
-        return choice.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase);
+        string choice;
+        do
+        {
+            Console.Write($"{message} (Y/N): ");
+            choice = Console.ReadLine()!.Trim().ToUpper();
+
+            if (choice != "Y" && choice != "N")
+            {
+                ShowMessage("Invalid input. Please enter 'Y' for Yes or 'N' for No.", true);
+            }
+        } while (choice != "Y" && choice != "N");
+
+        return choice == "Y";
     }
 
     public void DisplayMenuTitle(string title)
     {
         Console.Clear();
-        Console.WriteLine($"## {title} ##");
-        Console.WriteLine();
+        Console.WriteLine($"## {title} ##\n");
     }
 
     public string ReadNonEmptyInput(string prompt)

@@ -1,6 +1,5 @@
 ﻿using ContactConsoleApplication.Commands;
 using ContactConsoleApplication.Interfaces;
-using ContactServiceLibrary.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ContactConsoleApplication.Services;
@@ -20,13 +19,14 @@ public class MenuService : IMenuService
     {
         while (true)
         {
+
             _userInterfaceService.DisplayMenuTitle("Menu Options");
-            Console.WriteLine($"{"1.", -3} Add new contact");
-            Console.WriteLine($"{"2.", -3} Delete contact");
-            Console.WriteLine($"{"3.", -3} Update contact");
-            Console.WriteLine($"{"4.", -3} Show Contact Details");
-            Console.WriteLine($"{"5.", -3} View Contact List");
-            Console.WriteLine($"{"0.", -3} Exit Application");
+            Console.WriteLine($"{"1.",-3} Add new contact");
+            Console.WriteLine($"{"2.",-3} Delete contact");
+            Console.WriteLine($"{"3.",-3} Update contact");
+            Console.WriteLine($"{"4.",-3} Show Contact Details");
+            Console.WriteLine($"{"5.",-3} View Contact List");
+            Console.WriteLine($"{"0.",-3} Exit Application");
             Console.Write("\nEnter Menu Option: ");
             var option = Console.ReadLine();
 
@@ -59,7 +59,7 @@ public class MenuService : IMenuService
                     _userInterfaceService.ShowMessage("\nInvalid option Selected. Press any key to try again.", isError: true);
                     Console.ReadKey();
                     break;
-            }   
+            }
         }
     }
 }

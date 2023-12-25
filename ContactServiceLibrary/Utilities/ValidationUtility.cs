@@ -5,10 +5,14 @@ namespace ContactServiceLibrary.Utilities;
 public class ValidationUtility
 {
     /// <summary>
-    /// Validates an email address based on standard email format.
+    ///  Validates an email address using .NET's System.Net.Mail.MailAddress class.
     /// </summary>
     /// <param name="email">The email address to validate.</param>
     /// <returns>true if the email address is valid; otherwise, false.</returns>
+    /// <remarks>
+    /// This method utilizes .NET's MailAddress class, which is designed to conform to the specifications
+    /// outlined in the Internet standards for email addresses (RFC 5322 and RFC 6530).
+    /// </remarks>
     public static bool IsValidEmail(string email)
     {
         try

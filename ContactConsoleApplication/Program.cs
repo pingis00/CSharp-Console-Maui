@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
 {
-    var filePath = "c:/School/CSharp-Projects/Json-Filer/contacts.json";
+    var filePath = "c:/School/CSharp-Projects/Json-Filer/contacts2.json";
 
     services.AddSingleton<IFileService, FileService>();
     services.AddSingleton<IContactService, ContactService>();
