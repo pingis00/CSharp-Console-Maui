@@ -15,14 +15,14 @@ public class DeleteContactCommand : ICommand
         _userInterfaceServices = userInterfaceServices;
     }
 
-    public void Execute()
+    public async Task ExecuteAsync()
     {
         bool deleteContacts = true;
         while (deleteContacts)
         {
             _userInterfaceServices.DisplayMenuTitle("Delete Contact");
 
-            var serviceresult = _contactService.GetContactsFromList();
+            var serviceresult = await _contactService.GetContactsFromListAsync();
             if (serviceresult.Status == ServiceStatus.SUCCESS && serviceresult.Result is List<IContact> contacts && contacts.Any())
             {
                 _userInterfaceServices.ShowContactList("Current Contacts", contacts);
@@ -43,7 +43,7 @@ public class DeleteContactCommand : ICommand
                 }
                 else
                 {
-                    var getContact = _contactService.GetContactByEmailFromList(email);
+                    var getContact = await _contactService.GetContactByEmailFromListAsync(email);
                     if (getContact.Status == ServiceStatus.SUCCESS)
                     {
                         if (getContact.Result is IContact contact)
@@ -56,7 +56,7 @@ public class DeleteContactCommand : ICommand
 
                             if (confirmation.Trim().ToUpper() == "Y")
                             {
-                                var deleteResult = _contactService.DeleteContact(email);
+                                var deleteResult = await _contactService.DeleteContactAsync(email);
                                 switch (deleteResult.Status)
                                 {
                                     case ServiceStatus.DELETED:

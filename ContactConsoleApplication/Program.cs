@@ -29,4 +29,4 @@ builder.Start();
 Console.Clear();
 
 var menuService = builder.Services.GetRequiredService<IMenuService>();
-menuService.ShowMainMenu(); 
+await menuService.ShowMainMenuAsync();

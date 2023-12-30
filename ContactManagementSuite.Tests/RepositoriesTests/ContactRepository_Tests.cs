@@ -9,7 +9,7 @@ namespace ContactManagementSuite.Tests.RepositoriesTests;
 public class ContactRepository_Tests
 {
     [Fact]
-    public void LoadContacts_ShouldReturnContacts_WhenFileHasContent()
+    public async void LoadContactsAsync_ShouldReturnContacts_WhenFileHasContent()
     {
         var mockFileService = new Mock<IFileService>();
         var testContacts = new List<IContact>
@@ -19,14 +19,14 @@ public class ContactRepository_Tests
         };
         var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
         var json = JsonConvert.SerializeObject(testContacts, settings);
-        mockFileService.Setup(x => x.GetContentFromFile(It.IsAny<string>())).Returns(json);
+        mockFileService.Setup(x => x.GetContentFromFileAsync(It.IsAny<string>())).ReturnsAsync(json);
         var contactRepository = new ContactRepository(mockFileService.Object, "filväg");
 
-        var contacts = contactRepository.LoadContacts();
+        var contacts = await contactRepository.LoadContactsAsync();
 
         Assert.NotNull(contacts);
         Assert.Equal(testContacts.Count, contacts.Count);
-        
+
         for (int i = 0; i < testContacts.Count; i++)
         {
             Assert.Equal(testContacts[i].FirstName, contacts[i].FirstName);
@@ -38,20 +38,20 @@ public class ContactRepository_Tests
     }
 
     [Fact]
-    public void LoadContacts_ShouldReturnEmptyList_WhenFileIsEmpty()
+    public async void LoadContactsAsync_ShouldReturnEmptyList_WhenFileIsEmpty()
     {
         var mockFileService = new Mock<IFileService>();
-        mockFileService.Setup(x => x.GetContentFromFile(It.IsAny<string>())).Returns(string.Empty);
+        mockFileService.Setup(x => x.GetContentFromFileAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
         var contactRepository = new ContactRepository(mockFileService.Object, "filväg");
 
-        var contacts = contactRepository.LoadContacts();
+        var contacts = await contactRepository.LoadContactsAsync();
 
         Assert.NotNull(contacts);
         Assert.Empty(contacts);
     }
 
     [Fact]
-    public void SaveContacts_ShouldCallSaveContentToFile_WithCorrectJson()
+    public async void SaveContactsAsync_ShouldCallSaveContentToFile_WithCorrectJson()
     {
         var mockFileService = new Mock<IFileService>();
         var testContacts = new List<IContact>
@@ -67,8 +67,8 @@ public class ContactRepository_Tests
         };
         var expectedJson = JsonConvert.SerializeObject(testContacts, settings);
 
-        contactRepository.SaveContacts(testContacts);
+        await contactRepository.SaveContactsAsync(testContacts);
 
-        mockFileService.Verify(x => x.SaveContentToFile("filväg", It.Is<string>(json => json == expectedJson)));
+        mockFileService.Verify(x => x.SaveContentToFileAsync("filväg", It.Is<string>(json => json == expectedJson)));
     }
 }

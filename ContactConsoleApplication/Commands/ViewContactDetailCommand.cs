@@ -15,7 +15,7 @@ public class ViewContactDetailCommand : ICommand
         _userInterfaceServices = userInterfaceServices;
     }
 
-    public void Execute()
+    public async Task ExecuteAsync()
     {
         bool viewContact = true;
 
@@ -32,7 +32,7 @@ public class ViewContactDetailCommand : ICommand
                 continue;
             }
 
-            var serviceResult = _contactService.GetContactByEmailFromList(email);
+            var serviceResult = await _contactService.GetContactByEmailFromListAsync(email);
             switch (serviceResult.Status)
             {
                 case ServiceStatus.SUCCESS:

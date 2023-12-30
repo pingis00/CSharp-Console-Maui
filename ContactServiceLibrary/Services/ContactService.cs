@@ -11,6 +11,8 @@ public class ContactService : IContactService
 {
     private readonly IContactRepository _contactRepository;
 
+    public event EventHandler? ContactsUpdated;
+
     /// <summary>
     /// Initializes a new instance of the ContactService class.
     /// </summary>
@@ -20,7 +22,7 @@ public class ContactService : IContactService
         _contactRepository = contactRepository;
     }
 
-    public IServiceResult AddContact(IContact contact)
+    public async Task<IServiceResult> AddContactAsync(IContact contact)
     {
         var response = new ServiceResult();
         var errorMessage = new StringBuilder();
@@ -43,7 +45,7 @@ public class ContactService : IContactService
         }
         try
         {
-            var contacts = _contactRepository.LoadContacts();
+            var contacts = await _contactRepository.LoadContactsAsync();
             if (contacts.Any(x => x.Email == contact.Email))
             {
                 response.Status = ServiceStatus.ALREADY_EXISTS;
@@ -51,12 +53,13 @@ public class ContactService : IContactService
             else
             {
                 contacts.Add(contact);
-                _contactRepository.SaveContacts(contacts);
+                await _contactRepository.SaveContactsAsync(contacts);
                 response.Status = ServiceStatus.SUCCESS;
+                RaiseContactsUpdated();
             }
         }
         catch (Exception ex)
-        { 
+        {
             Debug.WriteLine(ex.Message);
             response.Status = ServiceStatus.FAILED;
             response.Result = ex.Message;
@@ -64,23 +67,24 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult DeleteContact(string email)
+    public async Task<IServiceResult> DeleteContactAsync(string email)
     {
         var response = new ServiceResult();
 
         try
         {
-            var contacts = _contactRepository.LoadContacts();
+            var contacts = await _contactRepository.LoadContactsAsync();
             var contactToDelete = contacts.FirstOrDefault(x => x.Email == email);
             if (contactToDelete != null)
             {
                 contacts.Remove(contactToDelete);
-                _contactRepository.SaveContacts(contacts);
+                await _contactRepository.SaveContactsAsync(contacts);
                 response.Status = ServiceStatus.DELETED;
+                RaiseContactsUpdated();
             }
             else
             {
-                response.Status= ServiceStatus.NOT_FOUND;
+                response.Status = ServiceStatus.NOT_FOUND;
             }
         }
         catch (Exception ex)
@@ -92,13 +96,13 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult GetContactByEmailFromList(string email)
+    public async Task<IServiceResult> GetContactByEmailFromListAsync(string email)
     {
         var response = new ServiceResult();
 
         try
         {
-            var contacts = _contactRepository.LoadContacts();
+            var contacts = await _contactRepository.LoadContactsAsync();
             var getContact = contacts.FirstOrDefault(x => x.Email == email);
 
             if (getContact != null)
@@ -121,13 +125,13 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult GetContactsFromList()
+    public async Task<IServiceResult> GetContactsFromListAsync()
     {
         var response = new ServiceResult();
 
         try
         {
-            var contacts = _contactRepository.LoadContacts();
+            var contacts = await _contactRepository.LoadContactsAsync();
 
             if (contacts != null && contacts.Any())
             {
@@ -136,7 +140,7 @@ public class ContactService : IContactService
             }
             else
             {
-                response.Status= ServiceStatus.SUCCESS;
+                response.Status = ServiceStatus.SUCCESS;
                 response.Result = new List<IContact>();
             }
         }
@@ -149,13 +153,13 @@ public class ContactService : IContactService
         return response;
     }
 
-    public IServiceResult UpdateContact(IContact contact)
+    public async Task<IServiceResult> UpdateContactAsync(IContact contact)
     {
         var response = new ServiceResult();
 
         try
         {
-            var contacts = _contactRepository.LoadContacts();
+            var contacts = await _contactRepository.LoadContactsAsync();
             var contactToUpdate = contacts.FirstOrDefault(x => x.Email == contact.Email);
 
             if (contactToUpdate != null)
@@ -165,8 +169,9 @@ public class ContactService : IContactService
                 contactToUpdate.Address = contact.Address;
                 contactToUpdate.PhoneNumber = contact.PhoneNumber;
 
-                _contactRepository.SaveContacts(contacts);
+                await _contactRepository.SaveContactsAsync(contacts);
                 response.Status = ServiceStatus.UPDATED;
+                RaiseContactsUpdated();
             }
             else
             {
@@ -180,5 +185,10 @@ public class ContactService : IContactService
             response.Result = ex.Message;
         }
         return response;
+    }
+
+    private void RaiseContactsUpdated()
+    {
+        ContactsUpdated?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -15,7 +15,7 @@ public class MenuService : IMenuService
         _userInterfaceService = userInterfaceService;
     }
 
-    public void ShowMainMenu()
+    public async Task ShowMainMenuAsync()
     {
         while (true)
         {
@@ -34,23 +34,23 @@ public class MenuService : IMenuService
             {
                 case "1":
                     var addContactCommand = _serviceProvider.GetRequiredService<AddContactCommand>();
-                    addContactCommand.Execute();
+                    await addContactCommand.ExecuteAsync();
                     break;
                 case "2":
                     var deleteContactCommand = _serviceProvider.GetRequiredService<DeleteContactCommand>();
-                    deleteContactCommand.Execute();
+                    await deleteContactCommand.ExecuteAsync();
                     break;
                 case "3":
                     var updateContactCommand = _serviceProvider.GetRequiredService<UpdateContactCommand>();
-                    updateContactCommand.Execute();
+                    await updateContactCommand.ExecuteAsync();
                     break;
                 case "4":
                     var viewContactDetailCommand = _serviceProvider.GetRequiredService<ViewContactDetailCommand>();
-                    viewContactDetailCommand.Execute();
+                    await viewContactDetailCommand.ExecuteAsync();
                     break;
                 case "5":
                     var viewContactListCommand = _serviceProvider.GetRequiredService<ViewContactListCommand>();
-                    viewContactListCommand.Execute();
+                    await viewContactListCommand.ExecuteAsync();
                     break;
                 case "0":
                     _userInterfaceService.ExitApplication();

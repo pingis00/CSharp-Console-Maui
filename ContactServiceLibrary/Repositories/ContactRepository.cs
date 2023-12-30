@@ -20,11 +20,11 @@ public class ContactRepository : IContactRepository
         _filepath = filepath;
     }
 
-    public List<IContact> LoadContacts()
+    public async Task<List<IContact>> LoadContactsAsync()
     {
         try
         {
-            var json = _fileService.GetContentFromFile(_filepath);
+            var json = await _fileService.GetContentFromFileAsync(_filepath);
             if (string.IsNullOrEmpty(json))
             {
                 return new List<IContact>();
@@ -43,7 +43,7 @@ public class ContactRepository : IContactRepository
         return new List<IContact>();
     }
 
-    public void SaveContacts(List<IContact> contacts)
+    public async Task SaveContactsAsync(List<IContact> contacts)
     {
         try
         {
@@ -54,7 +54,7 @@ public class ContactRepository : IContactRepository
             };
 
             var json = JsonConvert.SerializeObject(contacts, settings);
-            _fileService.SaveContentToFile(_filepath, json);
+            await _fileService.SaveContentToFileAsync(_filepath, json);
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message);}
     }

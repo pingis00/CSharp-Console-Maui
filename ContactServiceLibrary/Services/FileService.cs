@@ -5,25 +5,25 @@ namespace ContactServiceLibrary.Repositories;
 
 public class FileService() : IFileService
 {
-    public bool SaveContentToFile(string filepath, string content)
+    public async Task<bool> SaveContentToFileAsync(string filepath, string content)
     {
         try
         {
             using var sw = new StreamWriter(filepath, false);
-            sw.WriteLine(content);
+            await sw.WriteLineAsync(content);
             return true;
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return false;
     }
 
-    public string GetContentFromFile(string filepath)
+    public async Task<string> GetContentFromFileAsync(string filepath)
     {
         try
         {
             if (File.Exists(filepath))
             {
-                return File.ReadAllText(filepath);
+                return await File.ReadAllTextAsync(filepath);
             }
             else
             {

@@ -15,14 +15,14 @@ public class UpdateContactCommand : ICommand
         _userInterfaceServices = userInterfaceServices;
     }
 
-    public void Execute()
+    public async Task ExecuteAsync()
     {
         bool updateContacts = true;
         while (updateContacts)
         {
             _userInterfaceServices.DisplayMenuTitle("Update Contact");
 
-            var serviceResult = _contactService.GetContactsFromList();
+            var serviceResult = await _contactService.GetContactsFromListAsync();
             if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
             {
                 _userInterfaceServices.ShowContactList("Current Contacts", contacts);
@@ -44,7 +44,7 @@ public class UpdateContactCommand : ICommand
                 continue;
             }
 
-            var getContact = _contactService.GetContactByEmailFromList(email);
+            var getContact = await _contactService.GetContactByEmailFromListAsync(email);
 
             switch (getContact.Status)
             {
@@ -72,7 +72,7 @@ public class UpdateContactCommand : ICommand
                         var phoneNumber = Console.ReadLine()!;
                         if (!string.IsNullOrEmpty(phoneNumber)) { contactToUpdate.PhoneNumber = phoneNumber; }
 
-                        var updateResult = _contactService.UpdateContact(contactToUpdate);
+                        var updateResult = await _contactService.UpdateContactAsync(contactToUpdate);
                         switch (updateResult.Status)
                         {
                             case ServiceStatus.UPDATED:

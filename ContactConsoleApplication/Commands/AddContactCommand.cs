@@ -16,7 +16,7 @@ public class AddContactCommand : ICommand
         _userInterfaceServices = userInterfaceServices;
     }
 
-    public void Execute()
+    public async Task ExecuteAsync()
     {
         bool addingContacts = true;
 
@@ -38,7 +38,7 @@ public class AddContactCommand : ICommand
 
             if (confirmAdd)
             {
-                var serviceResult = _contactService.AddContact(contact);
+                var serviceResult = await _contactService.AddContactAsync(contact);
                 switch (serviceResult.Status)
                 {
                     case ServiceStatus.SUCCESS:

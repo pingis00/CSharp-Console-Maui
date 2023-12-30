@@ -15,7 +15,7 @@ public class ViewContactListCommand : ICommand
         _userInterfaceServices = userInterfaceServices;
     }
 
-    public void Execute()
+    public async Task ExecuteAsync()
     {
         _userInterfaceServices.DisplayMenuTitle("Show Contact List");
 
@@ -23,7 +23,7 @@ public class ViewContactListCommand : ICommand
         Console.Write("\nChoose an option: ");
         var sortOption = Console.ReadLine();
 
-        var serviceResult = _contactService.GetContactsFromList();
+        var serviceResult = await _contactService.GetContactsFromListAsync();
 
         if (serviceResult.Status == ServiceStatus.SUCCESS)
         {
