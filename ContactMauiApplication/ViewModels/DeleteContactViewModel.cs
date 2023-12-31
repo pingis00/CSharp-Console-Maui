@@ -17,6 +17,9 @@ public partial class DeleteContactViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     private bool isMessageVisible;
 
+    [ObservableProperty]
+    private Contact? contact;
+
     private readonly IContactService _contactService;
 
     public DeleteContactViewModel(IContactService contactService)
@@ -24,8 +27,7 @@ public partial class DeleteContactViewModel : ObservableObject, IQueryAttributab
         _contactService = contactService;
     }
 
-    [ObservableProperty]
-    private Contact? contact;
+
 
     [RelayCommand]
     private async Task DeleteContact()
@@ -36,8 +38,10 @@ public partial class DeleteContactViewModel : ObservableObject, IQueryAttributab
 
             if (result.Status == ServiceStatus.DELETED)
             {
-                await ShowTemporaryMessageAsync("Contact successfully deleted!", Colors.Green);
                 Contact = null;
+                await ShowTemporaryMessageAsync("Contact successfully deleted!", Colors.Green);
+                await Shell.Current.GoToAsync("..");
+                
             }
             else
             {

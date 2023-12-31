@@ -12,7 +12,7 @@ namespace ContactMauiApplication.ViewModels;
 public partial class ViewContactListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string message;
+    private string? message;
 
     [ObservableProperty]
     private Color messageColor = Colors.Transparent;
@@ -29,7 +29,7 @@ public partial class ViewContactListViewModel : ObservableObject
     {
         _contactService = contactService;
         _contactService.ContactsUpdated += OnContactsUpdated;
-        Task task = LoadContacts();
+        _ = LoadContacts();
     }
 
     public async Task LoadContacts()
@@ -57,16 +57,7 @@ public partial class ViewContactListViewModel : ObservableObject
         }
     }
 
-    private async Task ShowTemporaryMessageAsync(string message, Color color)
-    {
-        Message = message;
-        MessageColor = color;
-        IsMessageVisible = true;
-        await Task.Delay(3000);
-        IsMessageVisible = false;
-    }
-
-    private async void OnContactsUpdated(object sender, EventArgs e)
+    private async void OnContactsUpdated(object? sender, EventArgs e)
     {
         await LoadContacts();
     }
@@ -80,5 +71,16 @@ public partial class ViewContactListViewModel : ObservableObject
         };
 
         await Shell.Current.GoToAsync("deletecontactpage", parameters);
+    }
+
+    [RelayCommand]
+    public async Task NavigateToUpdateContactPage(Contact contact)
+    {
+        var parameters = new ShellNavigationQueryParameters
+        {
+            { "Contact", contact }
+        };
+
+        await Shell.Current.GoToAsync("updatecontactpage", parameters);
     }
 }

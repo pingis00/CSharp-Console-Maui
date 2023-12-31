@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ContactMauiApplication.Helpers;
 using ContactServiceLibrary.Enums;
 using ContactServiceLibrary.Interfaces;
-using ContactServiceLibrary.Utilities;
-using System.Text;
 using System.Windows.Input;
 using Contact = ContactServiceLibrary.Models.Contact;
 
@@ -48,43 +47,6 @@ public partial class AddContactViewModel : ObservableObject
 
     public async Task AddContactAsync()
     {
-        StringBuilder validationErrors = new StringBuilder();
-
-        if (string.IsNullOrEmpty(FirstName))
-        {
-            validationErrors.AppendLine("First name is required.");
-        }
-        if (string.IsNullOrEmpty(LastName))
-        {
-            validationErrors.AppendLine("Last name is required.");
-        }
-        if (string.IsNullOrEmpty(Address))
-        {
-            validationErrors.AppendLine("Address is required.");
-        }
-        if (string.IsNullOrEmpty(Email))
-        {
-            validationErrors.AppendLine("Email is required.");
-        }
-        else if (!ValidationUtility.IsValidEmail(Email))
-        {
-            validationErrors.AppendLine("Invalid email format. Expected format: example@domain.com");
-        }
-        if (string.IsNullOrEmpty(PhoneNumber))
-        {
-            validationErrors.AppendLine("Phone number is required.");
-        }
-        else if (!ValidationUtility.IsValidPhoneNumber(PhoneNumber))
-        {
-            validationErrors.AppendLine("Invalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.");
-        }
-
-        if (validationErrors.Length > 0)
-        {
-            await ShowTemporaryMessageAsync(validationErrors.ToString(), Colors.Red);
-            return;
-        }
-
         var newContact = new Contact
         {
             FirstName = FirstName!,
@@ -94,13 +56,21 @@ public partial class AddContactViewModel : ObservableObject
             PhoneNumber = PhoneNumber!,
         };
 
+        var validationErrors = ContactValidator.ValidateContact(newContact);
+
+        if (!string.IsNullOrEmpty(validationErrors))
+        {
+            await ShowTemporaryMessageAsync(validationErrors, Colors.Red);
+            return;
+        }
+
         var result = await _contactService.AddContactAsync(newContact);
 
         switch (result.Status)
         {
             case ServiceStatus.SUCCESS:
-                await ShowTemporaryMessageAsync("Contact successfully added!", Colors.Green);
                 ResetForm();
+                await ShowTemporaryMessageAsync("Contact successfully added!", Colors.Green); 
                 break;
 
             case ServiceStatus.ALREADY_EXISTS:

@@ -20,8 +20,8 @@
                             <Label Grid.Column="1" Text="{Binding Address}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
                             <Label Grid.Column="2" Text="{Binding Email}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
                             <Label Grid.Column="3" Text="{Binding PhoneNumber}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
-                            <Button Grid.Column="4" Text="Delete Contact"  Command="{Binding Path=BindingContext.NavigateToDeleteContactPageCommand, Source={x:Reference Name=PageRoot}}" CommandParameter="{Binding .}" />
-                            <Button Grid.Column="5" Text="Update" />
+                            <Button Grid.Column="4" Text="Delete Contact" Command="{Binding Path=BindingContext.NavigateToDeleteContactPageCommand, Source={x:Reference Name=PageRoot}}" CommandParameter="{Binding .}" />
+                            <Button Grid.Column="5" Text="Update Contact" Command="{Binding Path=BindingContext.NavigateToUpdateContactPageCommand, Source={x:Reference Name=PageRoot}}" CommandParameter="{Binding .}" />
                         </Grid>
                     </Frame>
                 </DataTemplate>

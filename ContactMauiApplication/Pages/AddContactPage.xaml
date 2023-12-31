@@ -10,9 +10,10 @@
     <VerticalStackLayout Spacing="15" Padding="30">
         <Entry Text="{Binding FirstName}" Placeholder="First Name" />
         <Entry Text="{Binding LastName}" Placeholder="Last Name" />
+        <Entry Text="{Binding Address}" Placeholder="Address" />
         <Entry Text="{Binding Email}" Placeholder="Email" />
         <Entry Text="{Binding PhoneNumber}" Placeholder="Phone Number" />
-        <Entry Text="{Binding Address}" Placeholder="Address" />
+        
         <Button Text="Add Contact" Command="{Binding AddContactCommand}" />
         <Label x:Name="MessageLabel" 
             Text="{Binding Message}" 
