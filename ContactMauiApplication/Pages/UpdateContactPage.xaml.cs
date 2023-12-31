@@ -2,9 +2,9 @@ using ContactMauiApplication.ViewModels;
 
 namespace ContactMauiApplication.Pages;
 
-public partial class DeleteContactPage : ContentPage
+public partial class UpdateContactPage : ContentPage
 {
-	public DeleteContactPage(DeleteContactViewModel viewModel)
+	public UpdateContactPage(UpdateContactViewModel viewModel)
 	{
 		InitializeComponent();
 		BindingContext = viewModel;

@@ -22,11 +22,14 @@ namespace ContactMauiApplication
             builder.Services.AddSingleton<HomePageViewModel>();
             builder.Services.AddSingleton<AddContactViewModel>();
             builder.Services.AddSingleton<ViewContactListViewModel>();
+            builder.Services.AddSingleton<DeleteContactViewModel>();
+            builder.Services.AddSingleton<UpdateContactViewModel>();
 
             builder.Services.AddSingleton<HomePage>();
             builder.Services.AddSingleton<AddContactPage>();
             builder.Services.AddSingleton<ViewContactListPage>();
             builder.Services.AddSingleton<DeleteContactPage>();
+            builder.Services.AddSingleton<UpdateContactPage>();
 
             builder.Services.AddSingleton<IFileService, FileService>();
 
