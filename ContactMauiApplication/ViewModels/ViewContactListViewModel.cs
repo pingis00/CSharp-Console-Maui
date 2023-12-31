@@ -35,7 +35,7 @@ public partial class ViewContactListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task NavigateToDeleteContact()
+    public async Task NavigateToDeleteContactPage()
     {
         await Shell.Current.GoToAsync("deletecontactpage");
     }

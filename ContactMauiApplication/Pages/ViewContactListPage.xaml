@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ContactMauiApplication.Pages.ViewContactListPage"
              
-             xmlns:models="clr-namespace:ContactServiceLibrary.Models;assembly=ContactServiceLibrary"
              xmlns:viewmodels="clr-namespace:ContactMauiApplication.ViewModels"
+             xmlns:models="clr-namespace:ContactServiceLibrary.Models;assembly=ContactServiceLibrary"
              x:DataType="{x:Type viewmodels:ViewContactListViewModel}"
-             x:Name="viewContactListPage"
              
+             x:Class="ContactMauiApplication.Pages.ViewContactListPage"   
+             x:Name="PageRoot"
              Title="ViewContactListPage">
+
     <CollectionView ItemsSource="{Binding Contacts}">
         <CollectionView.ItemTemplate>
             <DataTemplate x:DataType="models:Contact">
@@ -18,11 +19,7 @@
                         <Label Grid.Column="1" Text="{Binding Address}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
                         <Label Grid.Column="2" Text="{Binding Email}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
                         <Label Grid.Column="3" Text="{Binding PhoneNumber}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
-                        <Button Grid.Column="4" 
-                            Text="Delete Contact" 
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ViewContactListViewModel}}, 
-                            Path=NavigateToDeleteContactPageCommand}" 
-                            CommandParameter="{Binding .}" />
+                        <Button Grid.Column="4" Text="Delete Contact"  Command="{Binding Path=BindingContext.NavigateToDeleteContactPageCommand, Source={x:Reference Name=PageRoot}}" CommandParameter="{Binding .}" />
                         <Button Grid.Column="5" Text="Update" />
                     </Grid>
                 </Frame>
@@ -33,3 +30,4 @@
         </CollectionView.Footer>
     </CollectionView>
 </ContentPage>
+
