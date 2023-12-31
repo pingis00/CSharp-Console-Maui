@@ -43,6 +43,7 @@ public class ContactService : IContactService
             response.Result = errorMessage.ToString();
             return response;
         }
+
         try
         {
             var contacts = await _contactRepository.LoadContactsAsync();
@@ -156,35 +157,43 @@ public class ContactService : IContactService
     public async Task<IServiceResult> UpdateContactAsync(IContact contact)
     {
         var response = new ServiceResult();
+        var errorMessage = new StringBuilder();
 
-        try
+        if (!ValidationUtility.IsValidPhoneNumber(contact.PhoneNumber))
         {
-            var contacts = await _contactRepository.LoadContactsAsync();
-            var contactToUpdate = contacts.FirstOrDefault(x => x.Email == contact.Email);
-
-            if (contactToUpdate != null)
-            {
-                contactToUpdate.FirstName = contact.FirstName;
-                contactToUpdate.LastName = contact.LastName;
-                contactToUpdate.Address = contact.Address;
-                contactToUpdate.PhoneNumber = contact.PhoneNumber;
-
-                await _contactRepository.SaveContactsAsync(contacts);
-                response.Status = ServiceStatus.UPDATED;
-                RaiseContactsUpdated();
-            }
-            else
-            {
-                response.Status = ServiceStatus.NOT_FOUND;
-            }
+            errorMessage.AppendLine("Invalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.");
+            return response;
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            response.Status = ServiceStatus.FAILED;
-            response.Result = ex.Message;
-        }
-        return response;
+
+            try
+            {
+                var contacts = await _contactRepository.LoadContactsAsync();
+                var contactToUpdate = contacts.FirstOrDefault(x => x.Email == contact.Email);
+
+                if (contactToUpdate != null)
+                {
+                    contactToUpdate.FirstName = contact.FirstName;
+                    contactToUpdate.LastName = contact.LastName;
+                    contactToUpdate.Address = contact.Address;
+                    contactToUpdate.PhoneNumber = contact.PhoneNumber;
+
+                    await _contactRepository.SaveContactsAsync(contacts);
+                    response.Status = ServiceStatus.UPDATED;
+                    RaiseContactsUpdated();
+
+                }
+                else
+                {
+                    response.Status = ServiceStatus.NOT_FOUND;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                response.Status = ServiceStatus.FAILED;
+                response.Result = ex.Message;
+            }
+            return response;
     }
 
     private void RaiseContactsUpdated()
