@@ -8,17 +8,8 @@ using Contact = ContactServiceLibrary.Models.Contact;
 
 namespace ContactMauiApplication.ViewModels;
 
-public partial class AddContactViewModel : ObservableObject
+public partial class AddContactViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private string? message;
-
-    [ObservableProperty]
-    private Color messageColor = Colors.Transparent;
-
-    [ObservableProperty]
-    private bool isMessageVisible;
-
     [ObservableProperty]
     private string? firstName;
 
@@ -85,15 +76,6 @@ public partial class AddContactViewModel : ObservableObject
                 await ShowTemporaryMessageAsync("An unexpected error occurred.", Colors.Red);
                 break;
         }
-    }
-
-    protected async Task ShowTemporaryMessageAsync(string message, Color color)
-    {
-        Message = message;
-        MessageColor = color;
-        IsMessageVisible = true;
-        await Task.Delay(3000);
-        IsMessageVisible = false;
     }
 
     private void ResetForm()

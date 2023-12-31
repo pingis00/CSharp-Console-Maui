@@ -7,17 +7,8 @@ using Contact = ContactServiceLibrary.Models.Contact;
 
 namespace ContactMauiApplication.ViewModels;
 
-public partial class UpdateContactViewModel : ObservableObject, IQueryAttributable
+public partial class UpdateContactViewModel : BaseViewModel, IQueryAttributable
 {
-    [ObservableProperty]
-    private string? message;
-
-    [ObservableProperty]
-    private Color messageColor = Colors.Transparent;
-
-    [ObservableProperty]
-    private bool isMessageVisible;
-
     [ObservableProperty]
     private Contact? contact;
 
@@ -64,16 +55,6 @@ public partial class UpdateContactViewModel : ObservableObject, IQueryAttributab
                 break;
         }
     }
-
-    protected async Task ShowTemporaryMessageAsync(string message, Color color)
-    {
-        Message = message;
-        MessageColor = color;
-        IsMessageVisible = true;
-        await Task.Delay(3000);
-        IsMessageVisible = false;
-    }
-
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

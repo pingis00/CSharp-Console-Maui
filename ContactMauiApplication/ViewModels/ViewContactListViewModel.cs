@@ -7,17 +7,8 @@ using Contact = ContactServiceLibrary.Models.Contact;
 
 namespace ContactMauiApplication.ViewModels;
 
-public partial class ViewContactListViewModel : ObservableObject
+public partial class ViewContactListViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private string? message;
-
-    [ObservableProperty]
-    private Color messageColor = Colors.Transparent;
-
-    [ObservableProperty]
-    private bool isMessageVisible;
-
     private readonly IContactService _contactService;
 
     [ObservableProperty]
@@ -58,15 +49,6 @@ public partial class ViewContactListViewModel : ObservableObject
     private async void OnContactsUpdated(object? sender, EventArgs e)
     {
         await LoadContacts();
-    }
-
-    protected async Task ShowTemporaryMessageAsync(string message, Color color)
-    {
-        Message = message;
-        MessageColor = color;
-        IsMessageVisible = true;
-        await Task.Delay(3000);
-        IsMessageVisible = false;
     }
 
     [RelayCommand]
