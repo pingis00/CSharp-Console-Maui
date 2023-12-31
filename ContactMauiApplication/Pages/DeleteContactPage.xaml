@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             
+             xmlns:viewmodels="clr-namespace:ContactMauiApplication.ViewModels"
+             xmlns:models="clr-namespace:ContactServiceLibrary.Models;assembly=ContactServiceLibrary"
+             x:DataType="{x:Type viewmodels:DeleteContactViewModel}"
+             
+             
              x:Class="ContactMauiApplication.Pages.DeleteContactPage"
              Title="DeleteContactPage">
-    
-    <VerticalStackLayout Spacing="15" Padding="0,20"
-        HorizontalOptions="Center" VerticalOptions="Center">
-        <Label 
-            Text="Delete Contact" TextColor="White"
-            VerticalOptions="Center" HorizontalOptions="Center"
-            FontSize="40" FontAttributes="Bold"/>
 
+    <VerticalStackLayout Spacing="15" Padding="30">
+        <Label Text="{Binding Contact.FullName}" />
+        <Label Text="{Binding Contact.Address}"  />
+        <Label Text="{Binding Contact.Email}" />
+        <Label Text="{Binding Contact.PhoneNumber}" />
+
+        <Button Text="Delete" Command="{Binding DeleteContactCommand}" />
+
+        <Label x:Name="MessageLabel" 
+            Text="{Binding Message}" 
+            TextColor="{Binding MessageColor}"
+            FontSize="24"
+            IsVisible="{Binding IsMessageVisible}"
+            HorizontalOptions="Center" 
+            VerticalOptions="CenterAndExpand" />
     </VerticalStackLayout>
 </ContentPage>

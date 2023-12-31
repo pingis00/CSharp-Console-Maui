@@ -1,5 +1,4 @@
 using ContactMauiApplication.ViewModels;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace ContactMauiApplication.Pages;
 
@@ -25,6 +24,4 @@ public partial class ViewContactListPage : ContentPage
             }
         };
     }
-
-
 }

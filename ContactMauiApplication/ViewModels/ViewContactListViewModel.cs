@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using ContactServiceLibrary.Enums;
 using ContactServiceLibrary.Interfaces;
+using ContactServiceLibrary.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Contact = ContactServiceLibrary.Models.Contact;
 
 namespace ContactMauiApplication.ViewModels;
 
@@ -36,12 +38,20 @@ public partial class ViewContactListViewModel : ObservableObject
         if (result.Status == ServiceStatus.SUCCESS && result.Result is List<IContact> contactList)
         {
             Contacts = new ObservableCollection<IContact>(contactList);
-            IsMessageVisible = false;
+            if (contactList.Count == 0)
+            {
+                Message = "Listan är tom.";
+                MessageColor = Colors.Red;
+                IsMessageVisible = true;
+            }
+            else
+            {
+                IsMessageVisible = false;
+            }
         }
         else
         {
-            Contacts = new ObservableCollection<IContact>();
-            Message = "Listan är tom eller kunde inte laddas.";
+            Message = "Kunde inte ladda listan.";
             MessageColor = Colors.Red;
             IsMessageVisible = true;
         }
@@ -62,8 +72,13 @@ public partial class ViewContactListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task NavigateToDeleteContactPage()
+    public async Task NavigateToDeleteContactPage(Contact contact)
     {
-        await Shell.Current.GoToAsync("deletecontactpage");
+        var parameters = new ShellNavigationQueryParameters
+        {
+            { "Contact", contact }
+        };
+
+        await Shell.Current.GoToAsync("deletecontactpage", parameters);
     }
 }
