@@ -1,10 +1,14 @@
-﻿namespace ContactMauiApplication
+﻿using ContactMauiApplication.Pages;
+
+namespace ContactMauiApplication;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute("deletecontactpage", typeof(DeleteContactPage));
+
     }
 }

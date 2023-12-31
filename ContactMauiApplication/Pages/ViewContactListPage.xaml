@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             
+             xmlns:viewmodels="clr-namespace:ContactMauiApplication.ViewModels"
+             xmlns:models="clr-namespace:ContactServiceLibrary.Models;assembly=ContactServiceLibrary"
+             x:DataType="{x:Type viewmodels:ViewContactListViewModel}"
+             
+             x:Class="ContactMauiApplication.Pages.ViewContactListPage"   
+             x:Name="PageRoot"
+             Title="ViewContactListPage">
+
+    <CollectionView ItemsSource="{Binding Contacts}">
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="models:Contact">
+                <Frame Padding="3" Margin="5" CornerRadius="10" HasShadow="True" BackgroundColor="Black">
+                    <Grid Padding="10" ColumnDefinitions="3*, 2*, 2*, 2*, Auto, Auto" MinimumHeightRequest="60">
+                        <Label Grid.Column="0" Text="{Binding FullName}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
+                        <Label Grid.Column="1" Text="{Binding Address}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
+                        <Label Grid.Column="2" Text="{Binding Email}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
+                        <Label Grid.Column="3" Text="{Binding PhoneNumber}" VerticalOptions="Center" HorizontalTextAlignment="Start" LineBreakMode="NoWrap" />
+                        <Button Grid.Column="4" Text="Delete Contact"  Command="{Binding Path=BindingContext.NavigateToDeleteContactPageCommand, Source={x:Reference Name=PageRoot}}" CommandParameter="{Binding .}" />
+                        <Button Grid.Column="5" Text="Update" />
+                    </Grid>
+                </Frame>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+        <CollectionView.Footer>
+            <BoxView HeightRequest="1" BackgroundColor="Transparent" HorizontalOptions="FillAndExpand" />
+        </CollectionView.Footer>
+    </CollectionView>
+</ContentPage>
+
