@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ContactMauiApplication.Pages.HomePage"
+             
+             xmlns:viewmodels="clr-namespace:ContactMauiApplication.ViewModels"
+             x:DataType="{x:Type viewmodels:HomePageViewModel}"
+             
+             Title="HomePage">
+    <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+        <Label 
+                Text="Home Page" TextColor="Purple" 
+                VerticalOptions="Center" HorizontalOptions="Center"
+                FontSize="35" FontAttributes="Bold" />
+        <Label 
+                Text="Use the flyout menu to navigate"
+                TextColor="MediumPurple" 
+                VerticalOptions="Center" HorizontalOptions="Center"
+                FontSize="24" FontAttributes="Bold" />
+    </VerticalStackLayout>
+</ContentPage>

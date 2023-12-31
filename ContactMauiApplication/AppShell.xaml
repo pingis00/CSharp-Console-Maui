@@ -4,9 +4,22 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ContactMauiApplication"
-    Shell.FlyoutBehavior="Disabled"
+    
+    xmlns:pages="clr-namespace:ContactMauiApplication.Pages"
+    
+    Shell.FlyoutBehavior="Flyout"
     Title="ContactMauiApplication">
 
-    <ShellContent Title="Home" Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+    <FlyoutItem Title="Home">
+        <ShellContent Title="Home" Route="HomePage" ContentTemplate="{DataTemplate pages:HomePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Add Contact">
+        <ShellContent Title="Add Contact" Route="AddContactPage" ContentTemplate="{DataTemplate pages:AddContactPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Contact List">
+        <ShellContent Title="Contact List" Route="ViewContactListPage" ContentTemplate="{DataTemplate pages:ViewContactListPage}" />
+    </FlyoutItem>
 
 </Shell>
