@@ -50,7 +50,7 @@ public partial class DeleteContactViewModel : ObservableObject, IQueryAttributab
         }
     }
 
-    private async Task ShowTemporaryMessageAsync(string message, Color color)
+    protected async Task ShowTemporaryMessageAsync(string message, Color color)
     {
         Message = message;
         MessageColor = color;
@@ -58,6 +58,7 @@ public partial class DeleteContactViewModel : ObservableObject, IQueryAttributab
         await Task.Delay(3000);
         IsMessageVisible = false;
     }
+
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

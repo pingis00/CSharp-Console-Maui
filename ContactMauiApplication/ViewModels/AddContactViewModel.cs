@@ -11,6 +11,15 @@ namespace ContactMauiApplication.ViewModels;
 public partial class AddContactViewModel : ObservableObject
 {
     [ObservableProperty]
+    private string? message;
+
+    [ObservableProperty]
+    private Color messageColor = Colors.Transparent;
+
+    [ObservableProperty]
+    private bool isMessageVisible;
+
+    [ObservableProperty]
     private string? firstName;
 
     [ObservableProperty]
@@ -24,15 +33,6 @@ public partial class AddContactViewModel : ObservableObject
 
     [ObservableProperty]
     private string? phoneNumber;
-
-    [ObservableProperty]
-    private string? message;
-
-    [ObservableProperty]
-    private Color messageColor = Colors.Transparent;
-
-    [ObservableProperty]
-    private bool isMessageVisible;
 
     private readonly IContactService _contactService;
 
@@ -87,6 +87,15 @@ public partial class AddContactViewModel : ObservableObject
         }
     }
 
+    protected async Task ShowTemporaryMessageAsync(string message, Color color)
+    {
+        Message = message;
+        MessageColor = color;
+        IsMessageVisible = true;
+        await Task.Delay(3000);
+        IsMessageVisible = false;
+    }
+
     private void ResetForm()
     {
         FirstName = string.Empty;
@@ -94,14 +103,5 @@ public partial class AddContactViewModel : ObservableObject
         Address = string.Empty;
         Email = string.Empty;
         PhoneNumber = string.Empty;
-    }
-
-    private async Task ShowTemporaryMessageAsync(string message, Color color)
-    {
-        Message = message;
-        MessageColor = color;
-        IsMessageVisible = true;
-        await Task.Delay(3000);
-        IsMessageVisible = false;
     }
 }

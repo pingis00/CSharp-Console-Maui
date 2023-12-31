@@ -2,9 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using ContactServiceLibrary.Enums;
 using ContactServiceLibrary.Interfaces;
-using ContactServiceLibrary.Models;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Contact = ContactServiceLibrary.Models.Contact;
 
 namespace ContactMauiApplication.ViewModels;
@@ -60,6 +58,15 @@ public partial class ViewContactListViewModel : ObservableObject
     private async void OnContactsUpdated(object? sender, EventArgs e)
     {
         await LoadContacts();
+    }
+
+    protected async Task ShowTemporaryMessageAsync(string message, Color color)
+    {
+        Message = message;
+        MessageColor = color;
+        IsMessageVisible = true;
+        await Task.Delay(3000);
+        IsMessageVisible = false;
     }
 
     [RelayCommand]
