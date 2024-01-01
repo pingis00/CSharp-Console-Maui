@@ -1,6 +1,7 @@
 ﻿using ContactConsoleApplication.Interfaces;
 using ContactServiceLibrary.Enums;
 using ContactServiceLibrary.Interfaces;
+using ContactServiceLibrary.Utilities;
 
 namespace ContactConsoleApplication.Commands;
 
@@ -68,9 +69,13 @@ public class UpdateContactCommand : ICommand
                         var Address = Console.ReadLine()!;
                         if (!string.IsNullOrEmpty(Address)) { contactToUpdate.Address = Address; }
 
-                        Console.Write("Change Phone Number (or press Enter to skip): ");
-                        var phoneNumber = Console.ReadLine()!;
-                        if (!string.IsNullOrEmpty(phoneNumber)) { contactToUpdate.PhoneNumber = phoneNumber; }
+                        var phoneNumberInput = _userInterfaceServices.ReadValidPhoneNumber("Change Phone Number (or press Enter to skip): ", true);
+
+                        if (phoneNumberInput != null)
+                        {
+                            contactToUpdate.PhoneNumber = phoneNumberInput;
+                        }
+
 
                         var updateResult = await _contactService.UpdateContactAsync(contactToUpdate);
                         switch (updateResult.Status)

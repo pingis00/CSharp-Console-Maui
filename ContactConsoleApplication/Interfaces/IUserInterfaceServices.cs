@@ -13,4 +13,7 @@ public interface IUserInterfaceServices
     void ShowContactDetails(IContact contact, string title);
     void ShowContactList(string title, List<IContact> contacts, string sortMethod = "");
     (List<IContact> SortedContacts, string SortMethod) SortContacts(List<IContact> contacts, string sortOption);
+
+    string ReadValidPhoneNumber(string prompt, bool allowEmpty = false);
+    string ReadValidEmail(string prompt);
 }

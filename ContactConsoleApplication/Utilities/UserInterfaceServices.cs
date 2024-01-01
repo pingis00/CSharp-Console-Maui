@@ -1,5 +1,6 @@
 ﻿using ContactConsoleApplication.Interfaces;
 using ContactServiceLibrary.Interfaces;
+using ContactServiceLibrary.Utilities;
 
 namespace ContactConsoleApplication.Utilities;
 
@@ -139,5 +140,48 @@ public class UserInterfaceServices : IUserInterfaceServices
         };
 
         return (sortedContacts, sortMethod);
+    }
+
+    public string ReadValidEmail(string prompt)
+    {
+        string input;
+        do
+        {
+            Console.Write(prompt);
+            input = Console.ReadLine()!;
+
+            if (!ValidationUtility.IsValidEmail(input))
+            {
+                Console.Clear();
+                DisplayMenuTitle("Add New Contact");
+                ShowMessage("\nInvalid email format. Expected format: example@domain.com.", isError: true);
+                
+            }
+        }
+        while (!ValidationUtility.IsValidEmail(input));
+        return input;
+    }
+
+    public string ReadValidPhoneNumber(string prompt, bool allowEmpty = false)
+    {
+        string input;
+        do
+        {
+            Console.Write(prompt);
+            input = Console.ReadLine()!;
+
+            if (string.IsNullOrEmpty(input) && allowEmpty)
+            {
+                return null!;
+            }
+
+            if (!string.IsNullOrEmpty(input) && !ValidationUtility.IsValidPhoneNumber(input))
+            {
+                Console.Clear();
+                ShowMessage("\nInvalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.", isError: true);
+            }
+        }
+        while (!string.IsNullOrEmpty(input) && !ValidationUtility.IsValidPhoneNumber(input));
+        return input;
     }
 }

@@ -29,8 +29,8 @@ public class AddContactCommand : ICommand
             contact.FirstName = _userInterfaceServices.ReadNonEmptyInput("First Name: ");
             contact.LastName = _userInterfaceServices.ReadNonEmptyInput("Last Name: ");
             contact.Address = _userInterfaceServices.ReadNonEmptyInput("Address: ");
-            contact.Email = _userInterfaceServices.ReadNonEmptyInput("Email: ");
-            contact.PhoneNumber = _userInterfaceServices.ReadNonEmptyInput("Phone Number: ");
+            contact.Email = _userInterfaceServices.ReadValidEmail("Email: ");
+            contact.PhoneNumber = _userInterfaceServices.ReadValidPhoneNumber("Phone Number: ");
 
             Console.Clear();
             _userInterfaceServices.ShowContactDetails(contact, "Contact to add");
@@ -51,7 +51,7 @@ public class AddContactCommand : ICommand
                         break;
 
                     case ServiceStatus.FAILED:
-                        _userInterfaceServices.ShowMessage($"Failed when trying to add a contact to the contact list:\n{serviceResult.Result}", isError: true);
+                        _userInterfaceServices.ShowMessage($"Failed when trying to add a contact to the contact list!", isError: true);
                         break;
                 }
             }
