@@ -68,20 +68,37 @@ public class UserInterfaceServices : IUserInterfaceServices
         Console.WriteLine(new string('-', 40));
     }
 
-    public void ShowContactList(string title, List<IContact> contacts, string sortMethod = "")
+    public void ShowContactList(string title, List<IContact> contacts, string? sortOption = "")
     {
         Console.Clear();
         DisplayMenuTitle(title);
 
-        if (!string.IsNullOrEmpty(sortMethod))
+        IEnumerable<IContact> sortedContacts = sortOption switch
+        {
+            "1" => contacts.OrderBy(c => c.FirstName),
+            "2" => contacts.OrderBy(c => c.LastName),
+            "3" => contacts.OrderBy(c => c.Email),
+            _ => contacts
+        };
+
+        var sortMethod = sortOption switch
+        {
+            "1" => "First Name",
+            "2" => "Last Name",
+            "3" => "Email",
+            _ => "Unsorted"
+        };
+
+        if (sortMethod != "Unsorted")
         {
             Console.WriteLine($"List sorted by: {sortMethod}");
-            Console.WriteLine(new string('-', 90));
         }
 
+        Console.WriteLine(new string('-', 90));
         Console.WriteLine($"\n{"First Name",-15} {"Last Name",-15} {"Address",-20} {"Email",-25} {"Phone",-15}");
         Console.WriteLine(new string('-', 90));
-        foreach (var contact in contacts)
+
+        foreach (var contact in sortedContacts)
         {
             Console.WriteLine($"{contact.FirstName,-15} {contact.LastName,-15} {contact.Address,-20} {contact.Email,-25} {contact.PhoneNumber,-15}");
         }
@@ -119,27 +136,6 @@ public class UserInterfaceServices : IUserInterfaceServices
         }
         Console.WriteLine(message);
         Console.ResetColor();
-    }
-
-    public (List<IContact> SortedContacts, string SortMethod) SortContacts(List<IContact> contacts, string sortOption)
-    {
-        var sortMethod = sortOption switch
-        {
-            "1" => "First Name",
-            "2" => "Last Name",
-            "3" => "Email",
-            _ => "Unsorted",
-        };
-
-        var sortedContacts = sortOption switch
-        {
-            "1" => contacts.OrderBy(c => c.FirstName).ToList(),
-            "2" => contacts.OrderBy(c => c.LastName).ToList(),
-            "3" => contacts.OrderBy(c => c.Email).ToList(),
-            _ => contacts,
-        };
-
-        return (sortedContacts, sortMethod);
     }
 
     public string ReadValidEmail(string prompt)
@@ -216,4 +212,5 @@ public class UserInterfaceServices : IUserInterfaceServices
 
         return selectedContact;
     }
+
 }

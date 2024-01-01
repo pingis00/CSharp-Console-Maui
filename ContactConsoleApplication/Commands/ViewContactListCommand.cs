@@ -17,20 +17,18 @@ public class ViewContactListCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        _userInterfaceServices.DisplayMenuTitle("Show Contact List");
-
-        Console.WriteLine("Sort by: \n1. First Name \n2. Last Name \n3. Email \nPress any other key for unsorted");
-        Console.Write("\nChoose an option: ");
-        var sortOption = Console.ReadLine();
+        _userInterfaceServices.DisplayMenuTitle("View Contact List");
 
         var serviceResult = await _contactService.GetContactsFromListAsync();
-
         if (serviceResult.Status == ServiceStatus.SUCCESS)
         {
             if (serviceResult.Result is List<IContact> contacts && contacts.Any())
             {
-                var (sortedContacts, sortMethod) = _userInterfaceServices.SortContacts(contacts, sortOption!);
-                _userInterfaceServices.ShowContactList("Contact List", sortedContacts, sortMethod);
+                Console.WriteLine("Sort by: \n1. First Name \n2. Last Name \n3. Email \nPress any other key for unsorted");
+                Console.Write("\nChoose an option: ");
+                var sortOption = Console.ReadLine();
+
+                _userInterfaceServices.ShowContactList("Sorted Contact List", contacts, sortOption);
             }
             else
             {
