@@ -159,13 +159,18 @@ public class ContactService : IContactService
         var response = new ServiceResult();
         var errorMessage = new StringBuilder();
 
-        if (!ValidationUtility.IsValidPhoneNumber(contact.PhoneNumber))
+        if (!string.IsNullOrEmpty(contact.PhoneNumber) && !ValidationUtility.IsValidPhoneNumber(contact.PhoneNumber))
         {
             errorMessage.AppendLine("Invalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.");
+        }
+        if (errorMessage.Length > 0)
+        {
+            response.Status = ServiceStatus.FAILED;
+            response.Result = errorMessage.ToString();
             return response;
         }
 
-            try
+        try
             {
                 var contacts = await _contactRepository.LoadContactsAsync();
                 var contactToUpdate = contacts.FirstOrDefault(x => x.Email == contact.Email);
@@ -180,7 +185,6 @@ public class ContactService : IContactService
                     await _contactRepository.SaveContactsAsync(contacts);
                     response.Status = ServiceStatus.UPDATED;
                     RaiseContactsUpdated();
-
                 }
                 else
                 {

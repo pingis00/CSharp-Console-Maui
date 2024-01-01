@@ -82,7 +82,7 @@ public class UpdateContactCommand : ICommand
                                 break;
 
                             case ServiceStatus.FAILED:
-                                _userInterfaceServices.ShowMessage("An error occurred while updating the contact.", isError: true);
+                                _userInterfaceServices.ShowMessage($"Failed to update contact: {updateResult.Result}", isError: true);
                                 break;
 
                             default:
