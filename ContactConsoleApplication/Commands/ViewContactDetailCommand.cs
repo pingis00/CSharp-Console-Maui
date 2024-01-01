@@ -23,36 +23,25 @@ public class ViewContactDetailCommand : ICommand
         {
             _userInterfaceServices.DisplayMenuTitle("Show Contact Details");
 
-            Console.Write("Enter the email of the contact you like to view: ");
-            var email = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(email))
+            var serviceResult = await _contactService.GetContactsFromListAsync();
+            if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
             {
-                _userInterfaceServices.ShowMessage("Email cannot be empty.", isError: true);
-                continue;
+                var contactToView = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact you like to view, or type 'abort' to return to the main menu: ");
+                if (contactToView == null)
+                {
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine($"\nName: {contactToView.FirstName} {contactToView.LastName}");
+                Console.WriteLine($"Address: {contactToView.Address}");
+                Console.WriteLine($"Email: {contactToView.Email}");
+                Console.WriteLine($"Phone Number: {contactToView.PhoneNumber}");
             }
-
-            var serviceResult = await _contactService.GetContactByEmailFromListAsync(email);
-            switch (serviceResult.Status)
+            else
             {
-                case ServiceStatus.SUCCESS:
-                    if (serviceResult.Result is IContact contact)
-                    {
-                        Console.Clear();
-                        Console.WriteLine($"\nName: {contact.FirstName} {contact.LastName}");
-                        Console.WriteLine($"Address: {contact.Address}");
-                        Console.WriteLine($"Email: {contact.Email}");
-                        Console.WriteLine($"Phone Number: {contact.PhoneNumber}");
-                    }
-                    break;
-
-                case ServiceStatus.NOT_FOUND:
-                    _userInterfaceServices.ShowMessage("Contact with that email doesn´t exist.", isError: true);
-                    break;
-
-                case ServiceStatus.FAILED:
-                    _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact.", isError: true);
-                    break;
+                _userInterfaceServices.ShowMessage("No contacts available to view.", isError: true);
+                viewContact = false;
             }
 
             viewContact = _userInterfaceServices.AskToContinue("\nDo you want to view another contact?");

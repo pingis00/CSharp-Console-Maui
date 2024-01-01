@@ -16,4 +16,6 @@ public interface IUserInterfaceServices
 
     string ReadValidPhoneNumber(string prompt, bool allowEmpty = false);
     string ReadValidEmail(string prompt);
+
+    IContact GetUserSelectedContact(List<IContact> contacts, string prompt);
 }

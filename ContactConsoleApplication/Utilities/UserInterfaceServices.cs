@@ -184,4 +184,36 @@ public class UserInterfaceServices : IUserInterfaceServices
         while (!string.IsNullOrEmpty(input) && !ValidationUtility.IsValidPhoneNumber(input));
         return input;
     }
+
+    public IContact GetUserSelectedContact(List<IContact> contacts, string prompt)
+    {
+        IContact? selectedContact = null!;
+        while (selectedContact == null)
+        {
+            ShowContactList("Available Contacts", contacts);
+            Console.WriteLine(prompt);
+            var email = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ShowMessage("Email cannot be empty. Press Enter to try again.", isError: true);
+                Console.ReadKey();
+                continue;
+            }
+
+            if (email.Equals("abort", StringComparison.OrdinalIgnoreCase))
+            {
+                return null!;
+            }
+
+            selectedContact = contacts.FirstOrDefault(c => c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            if (selectedContact == null)
+            {
+                ShowMessage("\nNo contact found with the specified email. Press Enter to try again.", isError: true);
+                Console.ReadKey();
+            }
+        }
+
+        return selectedContact;
+    }
 }
