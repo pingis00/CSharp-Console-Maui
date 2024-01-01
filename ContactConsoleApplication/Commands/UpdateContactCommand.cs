@@ -53,27 +53,34 @@ public class UpdateContactCommand : ICommand
                     contactToUpdate.PhoneNumber = phoneNumberInput;
                 }
 
-                var updateResult = await _contactService.UpdateContactAsync(contactToUpdate);
-                switch (updateResult.Status)
+                try
                 {
-                    case ServiceStatus.UPDATED:
-                        Console.Clear();
-                        _userInterfaceServices.ShowMessage("Contact updated successfully.", isError: false);
-                        _userInterfaceServices.ShowContactDetails(contactToUpdate, "Updated Contact Details");
-                        break;
+                    var updateResult = await _contactService.UpdateContactAsync(contactToUpdate);
+                    switch (updateResult.Status)
+                    {
+                        case ServiceStatus.UPDATED:
+                            Console.Clear();
+                            _userInterfaceServices.ShowMessage("Contact updated successfully.", false);
+                            _userInterfaceServices.ShowContactDetails(contactToUpdate, "Updated Contact Details");
+                            break;
 
-                    case ServiceStatus.FAILED:
-                        _userInterfaceServices.ShowMessage($"Failed to update contact: {updateResult.Result}", isError: true);
-                        break;
+                        case ServiceStatus.FAILED:
+                            _userInterfaceServices.ShowMessage($"Failed to update contact: {updateResult.Result}", true);
+                            break;
 
-                    default:
-                        _userInterfaceServices.ShowMessage("Unexpected status when updating the contact.", isError: true);
-                        break;
+                        default:
+                            _userInterfaceServices.ShowMessage("Unexpected status when updating the contact.", true);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _userInterfaceServices.ShowMessage("An unexpected error occurred when updating the contact.", true, ex);
                 }
             }
             else
             {
-                _userInterfaceServices.ShowMessage("There are no contacts to update.", isError: true);
+                _userInterfaceServices.ShowMessage("There are no contacts to update.", true);
                 break;
             }
 

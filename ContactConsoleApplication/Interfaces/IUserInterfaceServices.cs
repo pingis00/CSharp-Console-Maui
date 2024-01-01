@@ -8,7 +8,7 @@ public interface IUserInterfaceServices
     void DisplayMenuTitle(string title);
     string ReadNonEmptyInput(string prompt);
     void ReturnToMainMenu();
-    void ShowMessage(string message, bool isError);
+    void ShowMessage(string message, bool isError, Exception? ex = null);
     bool AskToContinue(string message);
     void ShowContactList(string title, List<IContact> contacts, string? sortOption = "");
     void ShowContactDetails(IContact contact, string title);

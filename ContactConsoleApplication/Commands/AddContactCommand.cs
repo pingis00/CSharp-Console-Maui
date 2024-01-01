@@ -38,27 +38,33 @@ public class AddContactCommand : ICommand
 
             if (confirmAdd)
             {
-                var serviceResult = await _contactService.AddContactAsync(contact);
-                switch (serviceResult.Status)
+                try
                 {
-                    case ServiceStatus.SUCCESS:
-                        Console.Clear();
-                        _userInterfaceServices.ShowMessage("The Contact was added successfully", isError: false);
-                        break;
+                    var serviceResult = await _contactService.AddContactAsync(contact);
+                    switch (serviceResult.Status)
+                    {
+                        case ServiceStatus.SUCCESS:
+                            Console.Clear();
+                            _userInterfaceServices.ShowMessage("Contact added successfully.", false);
+                            break;
 
-                    case ServiceStatus.ALREADY_EXISTS:
-                        _userInterfaceServices.ShowMessage("A Contact with this email already exists!", isError: true);
-                        break;
+                        case ServiceStatus.ALREADY_EXISTS:
+                            _userInterfaceServices.ShowMessage("A Contact with this email already exists!", true);
+                            break;
 
-                    case ServiceStatus.FAILED:
-                        _userInterfaceServices.ShowMessage($"Failed when trying to add a contact to the contact list!", isError: true);
-                        break;
+                        case ServiceStatus.FAILED:
+                            _userInterfaceServices.ShowMessage($"Failed to add contact", true);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _userInterfaceServices.ShowMessage("An unexpected error occurred while adding a contact.", true, ex);
                 }
             }
             else
             {
-                Console.Clear();
-                _userInterfaceServices.ShowMessage("Contact not saved.", isError: true);
+                _userInterfaceServices.ShowMessage("Contact not saved.", true);
             }
             addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
         }

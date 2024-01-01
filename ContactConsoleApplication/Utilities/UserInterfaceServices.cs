@@ -213,4 +213,17 @@ public class UserInterfaceServices : IUserInterfaceServices
         return selectedContact;
     }
 
+    public void ShowMessage(string message, bool isError, Exception? ex = null)
+    {
+        Console.ForegroundColor = isError ? ConsoleColor.Red : ConsoleColor.Green;
+        Console.WriteLine(message);
+        Console.ResetColor();
+
+        if (ex != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Exception: {ex.Message}");
+            Console.ResetColor();
+        }
+    }
 }

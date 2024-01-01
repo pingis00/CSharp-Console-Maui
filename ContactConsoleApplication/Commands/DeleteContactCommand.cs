@@ -35,26 +35,34 @@ public class DeleteContactCommand : ICommand
                 _userInterfaceServices.ShowContactDetails(contactToDelete, "Contact to Delete");
                 bool confirmDelete = _userInterfaceServices.AskToContinue("\nAre you sure you want to delete this contact?");
 
-                if (confirmDelete)
+                try
                 {
-                    var deleteResult = await _contactService.DeleteContactAsync(contactToDelete.Email);
-                    switch (deleteResult.Status)
+                    if (confirmDelete)
                     {
-                        case ServiceStatus.DELETED:
-                            _userInterfaceServices.ShowMessage("Contact deleted successfully.", isError: false);
-                            break;
-                        case ServiceStatus.FAILED:
-                            _userInterfaceServices.ShowMessage("An error occurred while deleting the contact.", isError: true);
-                            break;
-                        default:
-                            _userInterfaceServices.ShowMessage("Unexpected error occurred.", isError: true);
-                            break;
+                        var deleteResult = await _contactService.DeleteContactAsync(contactToDelete.Email);
+                        switch (deleteResult.Status)
+                        {
+                            case ServiceStatus.DELETED:
+                                _userInterfaceServices.ShowMessage("Contact deleted successfully.", false);
+                                break;
+                            case ServiceStatus.FAILED:
+                                _userInterfaceServices.ShowMessage("An error occurred while deleting the contact.", true);
+                                break;
+                            default:
+                                _userInterfaceServices.ShowMessage("Unexpected error occurred.", true);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", true);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", isError: true);
+                    _userInterfaceServices.ShowMessage("An unexpected error occurred during contact deletion.", true, ex);
                 }
+
             }
             else
             {

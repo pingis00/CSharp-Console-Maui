@@ -32,12 +32,12 @@ public class ViewContactListCommand : ICommand
             }
             else
             {
-                _userInterfaceServices.ShowMessage("There are no contacts in the list.", isError: true);
+                _userInterfaceServices.ShowMessage("There are no contacts in the list.", true);
             }
         }
         else
         {
-            _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact list.", isError: true);
+            _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact list.", true);
         }
 
         _userInterfaceServices.ReturnToMainMenu();

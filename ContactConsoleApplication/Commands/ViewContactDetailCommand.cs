@@ -40,7 +40,7 @@ public class ViewContactDetailCommand : ICommand
             }
             else
             {
-                _userInterfaceServices.ShowMessage("No contacts available to view.", isError: true);
+                _userInterfaceServices.ShowMessage("No contacts available to view.", true);
                 viewContact = false;
             }
 
