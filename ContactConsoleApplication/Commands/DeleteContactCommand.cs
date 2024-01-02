@@ -17,26 +17,26 @@ public class DeleteContactCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        bool deleteContacts = true;
-        while (deleteContacts)
+        try
         {
-            _userInterfaceServices.DisplayMenuTitle("Delete Contact");
-
-            var serviceResult = await _contactService.GetContactsFromListAsync();
-            if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
+            bool deleteContacts = true;
+            while (deleteContacts)
             {
-                var contactToDelete = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact to delete, or type 'abort' to return to the main menu: ");
-                if (contactToDelete == null)
-                {
-                    break;
-                }
+                _userInterfaceServices.DisplayMenuTitle("Delete Contact");
 
-                Console.Clear();
-                _userInterfaceServices.ShowContactDetails(contactToDelete, "Contact to Delete");
-                bool confirmDelete = _userInterfaceServices.AskToContinue("\nAre you sure you want to delete this contact?");
-
-                try
+                var serviceResult = await _contactService.GetContactsFromListAsync();
+                if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
                 {
+                    var contactToDelete = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact to delete, or type 'abort' to return to the main menu: ");
+                    if (contactToDelete == null)
+                    {
+                        break;
+                    }
+
+                    Console.Clear();
+                    _userInterfaceServices.ShowContactDetails(contactToDelete, "Contact to Delete");
+                    bool confirmDelete = _userInterfaceServices.AskToContinue("\nAre you sure you want to delete this contact?");
+
                     if (confirmDelete)
                     {
                         var deleteResult = await _contactService.DeleteContactAsync(contactToDelete.Email);
@@ -60,21 +60,23 @@ public class DeleteContactCommand : ICommand
                         _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", true);
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    _userInterfaceServices.ShowMessage("An unexpected error occurred during contact deletion.", true, ex);
+                    _userInterfaceServices.ShowMessage("There are no contacts in the list.", isError: true);
+                    break;
                 }
 
+                deleteContacts = _userInterfaceServices.AskToContinue("\nDo you want to delete another contact?");
             }
-            else
-            {
-                _userInterfaceServices.ShowMessage("There are no contacts in the list.", isError: true);
-                break;
-            }
-
-            deleteContacts = _userInterfaceServices.AskToContinue("\nDo you want to delete another contact?");
         }
 
-        _userInterfaceServices.ReturnToMainMenu();
+        catch (Exception ex)
+        {
+            _userInterfaceServices.ShowMessage("An unexpected error occurred during contact deletion.", true, ex);
+        }
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }

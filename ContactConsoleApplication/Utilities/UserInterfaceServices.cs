@@ -121,20 +121,6 @@ public class UserInterfaceServices : IUserInterfaceServices
         }
     }
 
-    public void ShowMessage(string message, bool isError)
-    {
-        if (isError)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-        }
-        else
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-        }
-        Console.WriteLine(message);
-        Console.ResetColor();
-    }
-
     public string ReadValidEmail(string prompt)
     {
         string input;
@@ -225,7 +211,14 @@ public class UserInterfaceServices : IUserInterfaceServices
 
     public void ShowMessage(string message, bool isError, Exception? ex = null)
     {
-        Console.ForegroundColor = isError ? ConsoleColor.Red : ConsoleColor.Green;
+        if (isError)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
         Console.WriteLine(message);
         Console.ResetColor();
 

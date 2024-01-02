@@ -17,44 +17,44 @@ public class UpdateContactCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        bool updateContacts = true;
-        while (updateContacts)
+        try
         {
-            _userInterfaceServices.DisplayMenuTitle("Update Contact");
-
-            var serviceResult = await _contactService.GetContactsFromListAsync();
-            if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
+            bool updateContacts = true;
+            while (updateContacts)
             {
-                var contactToUpdate = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact to update, or type 'abort' to return to the main menu: ");
-                if (contactToUpdate == null)
+                _userInterfaceServices.DisplayMenuTitle("Update Contact");
+
+                var serviceResult = await _contactService.GetContactsFromListAsync();
+                if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
                 {
-                    break;
-                }
+                    var contactToUpdate = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact to update, or type 'abort' to return to the main menu: ");
+                    if (contactToUpdate == null)
+                    {
+                        break;
+                    }
 
-                Console.Clear();
-                _userInterfaceServices.ShowContactDetails(contactToUpdate, "Contact Details Before Update");
-                Console.WriteLine("Note: The email address cannot be changed. To change the email address, delete and re-add the contact.");
+                    Console.Clear();
+                    _userInterfaceServices.ShowContactDetails(contactToUpdate, "Contact Details Before Update");
+                    Console.WriteLine("Note: The email address cannot be changed. To change the email address, delete and re-add the contact.");
 
-                Console.Write("\nChange First Name (or press Enter to skip): ");
-                var firstName = Console.ReadLine()!;
-                if (!string.IsNullOrEmpty(firstName)) { contactToUpdate.FirstName = firstName; }
+                    Console.Write("\nChange First Name (or press Enter to skip): ");
+                    var firstName = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(firstName)) { contactToUpdate.FirstName = firstName; }
 
-                Console.Write("Change Last Name (or press Enter to skip): ");
-                var lastName = Console.ReadLine()!;
-                if (!string.IsNullOrEmpty(lastName)) { contactToUpdate.LastName = lastName; }
+                    Console.Write("Change Last Name (or press Enter to skip): ");
+                    var lastName = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(lastName)) { contactToUpdate.LastName = lastName; }
 
-                Console.Write("Change Address (or press Enter to skip): ");
-                var address = Console.ReadLine()!;
-                if (!string.IsNullOrEmpty(address)) { contactToUpdate.Address = address; }
+                    Console.Write("Change Address (or press Enter to skip): ");
+                    var address = Console.ReadLine()!;
+                    if (!string.IsNullOrEmpty(address)) { contactToUpdate.Address = address; }
 
-                var phoneNumberInput = _userInterfaceServices.ReadValidPhoneNumber("Change Phone Number (or press Enter to skip): ", true);
-                if (!string.IsNullOrEmpty(phoneNumberInput))
-                {
-                    contactToUpdate.PhoneNumber = phoneNumberInput;
-                }
+                    var phoneNumberInput = _userInterfaceServices.ReadValidPhoneNumber("Change Phone Number (or press Enter to skip): ", true);
+                    if (!string.IsNullOrEmpty(phoneNumberInput))
+                    {
+                        contactToUpdate.PhoneNumber = phoneNumberInput;
+                    }
 
-                try
-                {
                     var updateResult = await _contactService.UpdateContactAsync(contactToUpdate);
                     switch (updateResult.Status)
                     {
@@ -73,20 +73,24 @@ public class UpdateContactCommand : ICommand
                             break;
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    _userInterfaceServices.ShowMessage("An unexpected error occurred when updating the contact.", true, ex);
+                    _userInterfaceServices.ShowMessage("There are no contacts to update.", true);
+                    break;
                 }
-            }
-            else
-            {
-                _userInterfaceServices.ShowMessage("There are no contacts to update.", true);
-                break;
+
+                updateContacts = _userInterfaceServices.AskToContinue("\nDo you want to update another contact?");
             }
 
-            updateContacts = _userInterfaceServices.AskToContinue("\nDo you want to update another contact?");
         }
-
-        _userInterfaceServices.ReturnToMainMenu();
+        catch (Exception ex)
+        {
+            _userInterfaceServices.ShowMessage("An unexpected error occurred when updating the contact.", true, ex);
+        }
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }
+               

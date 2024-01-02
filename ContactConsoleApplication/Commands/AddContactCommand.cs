@@ -18,27 +18,27 @@ public class AddContactCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        bool addingContacts = true;
-
-        while (addingContacts)
+        try
         {
-            IContact contact = new Contact();
+            bool addingContacts = true;
 
-            _userInterfaceServices.DisplayMenuTitle("Add New Contact");
-
-            contact.FirstName = _userInterfaceServices.ReadNonEmptyInput("First Name: ");
-            contact.LastName = _userInterfaceServices.ReadNonEmptyInput("Last Name: ");
-            contact.Address = _userInterfaceServices.ReadNonEmptyInput("Address: ");
-            contact.Email = _userInterfaceServices.ReadValidEmail("Email: ");
-            contact.PhoneNumber = _userInterfaceServices.ReadValidPhoneNumber("Phone Number: ");
-
-            Console.Clear();
-            _userInterfaceServices.ShowContactDetails(contact, "Contact to add");
-            bool confirmAdd = _userInterfaceServices.AskToContinue("Do you want to save this contact?");
-
-            if (confirmAdd)
+            while (addingContacts)
             {
-                try
+                IContact contact = new Contact();
+
+                _userInterfaceServices.DisplayMenuTitle("Add New Contact");
+
+                contact.FirstName = _userInterfaceServices.ReadNonEmptyInput("First Name: ");
+                contact.LastName = _userInterfaceServices.ReadNonEmptyInput("Last Name: ");
+                contact.Address = _userInterfaceServices.ReadNonEmptyInput("Address: ");
+                contact.Email = _userInterfaceServices.ReadValidEmail("Email: ");
+                contact.PhoneNumber = _userInterfaceServices.ReadValidPhoneNumber("Phone Number: ");
+
+                Console.Clear();
+                _userInterfaceServices.ShowContactDetails(contact, "Contact to add");
+                bool confirmAdd = _userInterfaceServices.AskToContinue("Do you want to save this contact?");
+
+                if (confirmAdd)
                 {
                     var serviceResult = await _contactService.AddContactAsync(contact);
                     switch (serviceResult.Status)
@@ -57,19 +57,21 @@ public class AddContactCommand : ICommand
                             break;
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    _userInterfaceServices.ShowMessage("An unexpected error occurred while adding a contact.", true, ex);
+                    Console.Clear();
+                    _userInterfaceServices.ShowMessage("Contact not saved.", true);
                 }
+                addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
             }
-            else
-            {
-                Console.Clear();
-                _userInterfaceServices.ShowMessage("Contact not saved.", true);
-            }
-            addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
         }
-
-        _userInterfaceServices.ReturnToMainMenu();
+        catch (Exception ex)
+        {
+            _userInterfaceServices.ShowMessage("An unexpected error occurred while adding a contact.", true, ex);
+        }
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }

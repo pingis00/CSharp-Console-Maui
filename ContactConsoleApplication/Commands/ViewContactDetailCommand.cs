@@ -17,36 +17,45 @@ public class ViewContactDetailCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        bool viewContact = true;
-
-        while (viewContact)
+        try
         {
-            _userInterfaceServices.DisplayMenuTitle("Show Contact Details");
+            bool viewContact = true;
 
-            var serviceResult = await _contactService.GetContactsFromListAsync();
-            if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
+            while (viewContact)
             {
-                var contactToView = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact you like to view, or type 'abort' to return to the main menu: ");
-                if (contactToView == null)
+                _userInterfaceServices.DisplayMenuTitle("Show Contact Details");
+
+                var serviceResult = await _contactService.GetContactsFromListAsync();
+                if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
                 {
-                    break;
+                    var contactToView = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact you like to view, or type 'abort' to return to the main menu: ");
+                    if (contactToView == null)
+                    {
+                        break;
+                    }
+
+                    Console.Clear();
+                    Console.WriteLine($"\nName: {contactToView.FirstName} {contactToView.LastName}");
+                    Console.WriteLine($"Address: {contactToView.Address}");
+                    Console.WriteLine($"Email: {contactToView.Email}");
+                    Console.WriteLine($"Phone Number: {contactToView.PhoneNumber}");
+                }
+                else
+                {
+                    _userInterfaceServices.ShowMessage("No contacts available to view.", true);
+                    viewContact = false;
                 }
 
-                Console.Clear();
-                Console.WriteLine($"\nName: {contactToView.FirstName} {contactToView.LastName}");
-                Console.WriteLine($"Address: {contactToView.Address}");
-                Console.WriteLine($"Email: {contactToView.Email}");
-                Console.WriteLine($"Phone Number: {contactToView.PhoneNumber}");
+                viewContact = _userInterfaceServices.AskToContinue("\nDo you want to view another contact?");
             }
-            else
-            {
-                _userInterfaceServices.ShowMessage("No contacts available to view.", true);
-                viewContact = false;
-            }
-
-            viewContact = _userInterfaceServices.AskToContinue("\nDo you want to view another contact?");
         }
-
-        _userInterfaceServices.ReturnToMainMenu();
+        catch (Exception ex)
+        {
+            _userInterfaceServices.ShowMessage($"An unexpected error occurred while viewing contact details: {ex.Message}", true);
+        }
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }

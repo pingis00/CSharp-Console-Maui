@@ -17,29 +17,38 @@ public class ViewContactListCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        _userInterfaceServices.DisplayMenuTitle("View Contact List");
-
-        var serviceResult = await _contactService.GetContactsFromListAsync();
-        if (serviceResult.Status == ServiceStatus.SUCCESS)
+        try
         {
-            if (serviceResult.Result is List<IContact> contacts && contacts.Any())
-            {
-                Console.WriteLine("Sort by: \n1. First Name \n2. Last Name \n3. Email \nPress any other key for unsorted");
-                Console.Write("\nChoose an option: ");
-                var sortOption = Console.ReadLine();
+            _userInterfaceServices.DisplayMenuTitle("View Contact List");
 
-                _userInterfaceServices.ShowContactList("Sorted Contact List", contacts, sortOption);
+            var serviceResult = await _contactService.GetContactsFromListAsync();
+            if (serviceResult.Status == ServiceStatus.SUCCESS)
+            {
+                if (serviceResult.Result is List<IContact> contacts && contacts.Any())
+                {
+                    Console.WriteLine("Sort by: \n1. First Name \n2. Last Name \n3. Email \nPress any other key for unsorted");
+                    Console.Write("\nChoose an option: ");
+                    var sortOption = Console.ReadLine();
+
+                    _userInterfaceServices.ShowContactList("Sorted Contact List", contacts, sortOption);
+                }
+                else
+                {
+                    _userInterfaceServices.ShowMessage("There are no contacts in the list.", true);
+                }
             }
             else
             {
-                _userInterfaceServices.ShowMessage("There are no contacts in the list.", true);
+                _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact list.", true);
             }
         }
-        else
+        catch (Exception ex)
         {
-            _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact list.", true);
+            _userInterfaceServices.ShowMessage($"An unexpected error occurred while showing the contact list: {ex.Message}", true);
         }
-
-        _userInterfaceServices.ReturnToMainMenu();
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }
