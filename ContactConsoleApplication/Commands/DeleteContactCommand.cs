@@ -17,87 +17,66 @@ public class DeleteContactCommand : ICommand
 
     public async Task ExecuteAsync()
     {
-        bool deleteContacts = true;
-        while (deleteContacts)
+        try
         {
-            _userInterfaceServices.DisplayMenuTitle("Delete Contact");
-
-            var serviceresult = await _contactService.GetContactsFromListAsync();
-            if (serviceresult.Status == ServiceStatus.SUCCESS && serviceresult.Result is List<IContact> contacts && contacts.Any())
+            bool deleteContacts = true;
+            while (deleteContacts)
             {
-                _userInterfaceServices.ShowContactList("Current Contacts", contacts);
-                Console.WriteLine("\nType 'back' to return to the main menu.");
+                _userInterfaceServices.DisplayMenuTitle("Delete Contact");
 
-                Console.Write("\nEnter the Email of the Contact to Delete: ");
-                var email = Console.ReadLine()!;
-
-                if (string.IsNullOrEmpty(email))
+                var serviceResult = await _contactService.GetContactsFromListAsync();
+                if (serviceResult.Status == ServiceStatus.SUCCESS && serviceResult.Result is List<IContact> contacts && contacts.Any())
                 {
-                    _userInterfaceServices.ShowMessage("\nEmail cannot be empty. Press any key to try again.", isError: true);
-                    Console.ReadKey();
-                    continue;
-                }
-                else if (email.Equals("back", StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
-                else
-                {
-                    var getContact = await _contactService.GetContactByEmailFromListAsync(email);
-                    if (getContact.Status == ServiceStatus.SUCCESS)
+                    var contactToDelete = _userInterfaceServices.GetUserSelectedContact(contacts, "\nEnter the email of the contact to delete, or type 'abort' to return to the main menu: ");
+                    if (contactToDelete == null)
                     {
-                        if (getContact.Result is IContact contact)
-                        {
-                            Console.Clear();
-                            _userInterfaceServices.ShowContactDetails(contact, "Contact to Delete");
-
-                            Console.Write("\nAre you sure you want to delete this contact? (Y/N): ");
-                            var confirmation = Console.ReadLine()!;
-
-                            if (confirmation.Trim().ToUpper() == "Y")
-                            {
-                                var deleteResult = await _contactService.DeleteContactAsync(email);
-                                switch (deleteResult.Status)
-                                {
-                                    case ServiceStatus.DELETED:
-                                        Console.Clear();
-                                        _userInterfaceServices.ShowMessage("Contact deleted successfully.", isError: false);
-                                        break;
-
-                                    case ServiceStatus.FAILED:
-                                        _userInterfaceServices.ShowMessage("An error occurred while deleting the contact.", isError: true);
-                                        break;
-
-                                    default:
-                                        _userInterfaceServices.ShowMessage("Unexpected error occurred.", isError: true);
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", isError: true);
-                            }
-                        }
+                        break;
                     }
-                    else if (getContact.Status == ServiceStatus.NOT_FOUND)
+
+                    Console.Clear();
+                    _userInterfaceServices.ShowContactDetails(contactToDelete, "Contact to Delete");
+                    bool confirmDelete = _userInterfaceServices.AskToContinue("\nAre you sure you want to delete this contact?");
+
+                    if (confirmDelete)
                     {
-                        _userInterfaceServices.ShowMessage("Contact with that email address doesn´t exist.", isError: true);
+                        var deleteResult = await _contactService.DeleteContactAsync(contactToDelete.Email);
+                        switch (deleteResult.Status)
+                        {
+                            case ServiceStatus.DELETED:
+                                Console.Clear();
+                                _userInterfaceServices.ShowMessage("Contact deleted successfully.", false);
+                                break;
+                            case ServiceStatus.FAILED:
+                                _userInterfaceServices.ShowMessage("An error occurred while deleting the contact.", true);
+                                break;
+                            default:
+                                _userInterfaceServices.ShowMessage("Unexpected error occurred.", true);
+                                break;
+                        }
                     }
                     else
                     {
-                        _userInterfaceServices.ShowMessage("An error occurred while retrieving the contact.", isError: true);
+                        Console.Clear();
+                        _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", true);
                     }
                 }
-            }
-            else
-            {
-                _userInterfaceServices.ShowMessage("There are no contacts in the list.", isError: true);
-                break;
-            }
+                else
+                {
+                    _userInterfaceServices.ShowMessage("There are no contacts in the list.", isError: true);
+                    break;
+                }
 
-            deleteContacts = _userInterfaceServices.AskToContinue("\nDo you want to delete another contact?");
+                deleteContacts = _userInterfaceServices.AskToContinue("\nDo you want to delete another contact?");
+            }
         }
 
-        _userInterfaceServices.ReturnToMainMenu();
+        catch (Exception ex)
+        {
+            _userInterfaceServices.ShowMessage("An unexpected error occurred during contact deletion.", true, ex);
+        }
+        finally
+        {
+            _userInterfaceServices.ReturnToMainMenu();
+        }
     }
 }
