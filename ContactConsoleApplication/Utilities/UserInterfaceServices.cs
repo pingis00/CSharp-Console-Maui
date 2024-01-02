@@ -16,6 +16,7 @@ public class UserInterfaceServices : IUserInterfaceServices
 
             if (choice != "Y" && choice != "N")
             {
+                Console.Clear();
                 ShowMessage("Invalid input. Please enter 'Y' for Yes or 'N' for No.", true);
             }
         } while (choice != "Y" && choice != "N");
@@ -88,12 +89,8 @@ public class UserInterfaceServices : IUserInterfaceServices
             "3" => "Email",
             _ => "Unsorted"
         };
-
-        if (sortMethod != "Unsorted")
-        {
-            Console.WriteLine($"List sorted by: {sortMethod}");
-        }
-
+        
+        Console.WriteLine($"List sorted by: {sortMethod}");
         Console.WriteLine(new string('-', 90));
         Console.WriteLine($"\n{"First Name",-15} {"Last Name",-15} {"Address",-20} {"Email",-25} {"Phone",-15}");
         Console.WriteLine(new string('-', 90));
@@ -141,43 +138,56 @@ public class UserInterfaceServices : IUserInterfaceServices
     public string ReadValidEmail(string prompt)
     {
         string input;
-        do
+        while (true)
         {
             Console.Write(prompt);
             input = Console.ReadLine()!;
 
+            if (string.IsNullOrEmpty(input))
+            {
+                Console.Clear();
+                ShowMessage("Email address cannot be empty.\n", isError: true);
+                continue;
+            }
+
             if (!ValidationUtility.IsValidEmail(input))
             {
                 Console.Clear();
-                DisplayMenuTitle("Add New Contact");
-                ShowMessage("\nInvalid email format. Expected format: example@domain.com.", isError: true);
-                
+                ShowMessage("Invalid email format. Expected format: example@domain.com.\n", isError: true);
+                continue;
             }
+
+            break;
         }
-        while (!ValidationUtility.IsValidEmail(input));
+
         return input;
     }
 
     public string ReadValidPhoneNumber(string prompt, bool allowEmpty = false)
     {
         string input;
-        do
+        while (true)
         {
             Console.Write(prompt);
             input = Console.ReadLine()!;
 
-            if (string.IsNullOrEmpty(input) && allowEmpty)
+            if (string.IsNullOrEmpty(input))
             {
-                return null!;
+                if (allowEmpty) return "";
+                Console.Clear();
+                ShowMessage("Phone number cannot be empty.\n", isError: true);
             }
-
-            if (!string.IsNullOrEmpty(input) && !ValidationUtility.IsValidPhoneNumber(input))
+            else if (!ValidationUtility.IsValidPhoneNumber(input))
             {
                 Console.Clear();
-                ShowMessage("\nInvalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.", isError: true);
+                ShowMessage("Invalid phone number format. Expected format: +1234567890 or 0123456789 without spaces or hyphens.\n", isError: true);
+            }
+            else
+            {
+                break;
             }
         }
-        while (!string.IsNullOrEmpty(input) && !ValidationUtility.IsValidPhoneNumber(input));
+
         return input;
     }
 

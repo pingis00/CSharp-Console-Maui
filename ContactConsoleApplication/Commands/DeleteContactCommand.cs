@@ -43,6 +43,7 @@ public class DeleteContactCommand : ICommand
                         switch (deleteResult.Status)
                         {
                             case ServiceStatus.DELETED:
+                                Console.Clear();
                                 _userInterfaceServices.ShowMessage("Contact deleted successfully.", false);
                                 break;
                             case ServiceStatus.FAILED:
@@ -55,6 +56,7 @@ public class DeleteContactCommand : ICommand
                     }
                     else
                     {
+                        Console.Clear();
                         _userInterfaceServices.ShowMessage("\nContact deletion cancelled.", true);
                     }
                 }

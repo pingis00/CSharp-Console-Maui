@@ -64,6 +64,7 @@ public class AddContactCommand : ICommand
             }
             else
             {
+                Console.Clear();
                 _userInterfaceServices.ShowMessage("Contact not saved.", true);
             }
             addingContacts = _userInterfaceServices.AskToContinue("\nDo you want to add another contact?");
